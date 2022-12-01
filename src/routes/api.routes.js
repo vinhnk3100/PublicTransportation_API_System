@@ -9,7 +9,7 @@ Router.use('/auth', authRouter)
 Router.use('/user', userRouter)
 
 // Handle error
-Router.use((err, req, res) => {
+Router.use((err, req, res, next) => {
     return res.status(500).json({
         success: false,
         message: 'ERR: Handling API Error',

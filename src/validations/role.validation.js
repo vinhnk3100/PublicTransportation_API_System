@@ -12,13 +12,15 @@ exports.admin = async (req, res, next) => {
 }
 
 exports.staff = async (req, res, next) => {
-    if (req.session.role !== Role.STAFF || req.session.role !== Role.ADMIN) {
-        return res.json({
-            success: true,
-            message: "Access denied!"
-        });
+    console.log(req.session.role)
+    if (req.session.role === Role.STAFF || req.session.role === Role.ADMIN) {
+        next();
+        return;
     }
-    next();
+    return res.json({
+        success: true,
+        message: "Access denied!"
+    });
 }
 
 module.exports = this
