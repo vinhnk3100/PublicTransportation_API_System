@@ -22,7 +22,11 @@ const RouteSchema = new Schema({
     vehicle: {
         type: mongoose.Types.ObjectId, 
         ref: "Vehicles",
-    }
+    },
+    // management_unit: {
+    //     type: mongoose.Types.ObjectId,
+    //     ref: ""
+    // }
 })
 
 const Route = mongoose.model("Routes", RouteSchema)

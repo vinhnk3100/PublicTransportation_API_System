@@ -1,11 +1,11 @@
 // UserController - Get, Create, Update, Delete
 // Some functions specify only for administrator
 
-const User = require('../models/User.model')
+const UserModel = require('../models/User.model')
 
 // Get
 exports.get = async (req, res, next) => {
-    const user = await User.find({}).lean().exec();
+    const user = await UserModel.find({}).lean().exec();
 
     if (!user) {
         return res.json({
@@ -25,7 +25,7 @@ exports.get = async (req, res, next) => {
 exports.create = async (req, res, next) => {
     const { username, fullname, password, phoneNumber, role } = req.body
     try {
-        const newUser = await User.create({
+        const newUser = await UserModel.create({
             username: username,
             fullname: fullname,
             password: bcrypt.hashSync(password, 10),
@@ -47,7 +47,7 @@ exports.create = async (req, res, next) => {
 exports.delete = async (req, res, next) => {
     const { userId } = req.params;
 
-    const user = await User.findByIdAndDelete({ _id: userId })
+    const user = await UserModel.findByIdAndDelete({ _id: userId })
 
     if (!user) {
         return res.json({
