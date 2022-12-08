@@ -16,7 +16,7 @@ const VehicleSchema = new Schema({
         type: String,
         default: null
     },
-    vehicle_seats: {
+    no_of_seats: {
         type: Number,
         default: null
     },
@@ -28,11 +28,12 @@ const VehicleSchema = new Schema({
         type: String,
         default: null
     },
-    vehicle_chauffeur: {
-        type: mongoose.Types.ObjectId, 
-        ref: "Users",
+    vehicle_mgt_unit: {
+        type: Schema.Types.ObjectId, 
+        ref: "Management Units",
     }
-})
+},
+{ timestamps: true })
 
 const Vehicle = mongoose.model('Vehicles', VehicleSchema);
 

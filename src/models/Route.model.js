@@ -3,31 +3,30 @@ const mongoose = require("mongoose")
 const Schema = mongoose.Schema
 
 const RouteSchema = new Schema({
-    route_start: {
+    route_name: {
         type: String,
         required: true,
     },
-    route_end: {
-        type: String,
+    distance_length: {
+        type: Number,
         required: true,
     },
-    timeStart: {
-        type: Date, 
+    time_start: {
+        type: String, 
         required: true,
     },
-    timeEnd: {
-        type: Date, 
+    time_end: {
+        type: String, 
         required: true,
     },
-    vehicle: {
-        type: mongoose.Types.ObjectId, 
-        ref: "Vehicles",
-    },
-    // management_unit: {
-    //     type: mongoose.Types.ObjectId,
-    //     ref: ""
-    // }
-})
+    stations: [
+        {
+            _id: false,
+            station_name: {type: String, required: true,}
+        }
+    ],
+    vehicles: [{type: Schema.Types.ObjectId, ref: "Vehicles"}],
+}, {timestamps: true} )
 
 const Route = mongoose.model("Routes", RouteSchema)
 

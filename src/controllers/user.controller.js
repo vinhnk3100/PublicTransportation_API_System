@@ -2,26 +2,33 @@
 // Some functions specify only for administrator
 
 const UserModel = require('../models/User.model')
+const bcrypt = require('bcrypt');
 
 // Get
 exports.get = async (req, res, next) => {
-    const user = await UserModel.find({}).lean().exec();
+    try {
+        const user = await UserModel.find({}).lean().exec();
 
-    if (!user) {
+        if (!user) {
+            return res.json({
+                success: true,
+                message: "No user existed right now!"
+            })
+        }
+
         return res.json({
             success: true,
-            message: "No user existed right now!"
+            message: "Users found!",
+            total_user: user.length,
+            users: user
         })
+    } catch (e) {
+        console.log("ERR: Register Error: ", e);
+        next(e);
     }
-
-    return res.json({
-        success: true,
-        message: "Users found!",
-        users: user
-    })
 }
 
-// Create Staff - Admin only
+// Create - Admin only
 exports.create = async (req, res, next) => {
     const { username, fullname, password, phoneNumber, role } = req.body
     try {
@@ -44,20 +51,26 @@ exports.create = async (req, res, next) => {
     }
 }
 
+// Delete
 exports.delete = async (req, res, next) => {
     const { userId } = req.params;
 
-    const user = await UserModel.findByIdAndDelete({ _id: userId })
+    try {
+        const user = await UserModel.findByIdAndDelete({ _id: userId })
 
-    if (!user) {
+        if (!user) {
+            return res.json({
+                success: false,
+                message: "User not existed!"
+            })
+        }
+
         return res.json({
-            success: false,
-            message: "User not existed!"
+            success: true,
+            message: `User ${userId} deleted!`
         })
+    } catch (e) {
+        console.log("ERR: Register Error: ", e);
+        next(e);
     }
-
-    return res.json({
-        success: true,
-        message: `User ${userId} deleted!`
-    })
 }
