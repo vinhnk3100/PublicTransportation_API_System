@@ -14,21 +14,26 @@ const Schema = mongoose.Schema
 const VehicleSchema = new Schema({
     vehicle_type: {
         type: String,
-        default: null
+        default: 1,
+        required: true
     },
     no_of_seats: {
         type: Number,
+        required: true,
         default: null
     },
     vehicle_brand: {
         type: String,
+        required: true,
         default: null
     },
     vehicle_model: {
         type: String,
+        required: true,
         default: null
     },
     vehicle_mgt_unit: {
+        required: true,
         type: Schema.Types.ObjectId, 
         ref: "Management Units",
     }

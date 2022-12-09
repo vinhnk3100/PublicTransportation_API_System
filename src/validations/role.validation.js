@@ -12,7 +12,6 @@ exports.admin = async (req, res, next) => {
 }
 
 exports.staff = async (req, res, next) => {
-    console.log(req.session.role)
     if (req.session.role === Role.STAFF || req.session.role === Role.ADMIN) {
         next();
         return;

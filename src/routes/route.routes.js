@@ -11,5 +11,8 @@ Router.get("/:routeId", roleValidation.admin, routeController.getById)
 // Create route
 Router.post('/create', roleValidation.admin, routeController.create)
 
+// Delete route
+Router.delete('/:routeId', roleValidation.admin, routeController.delete)
+
 
 module.exports = Router

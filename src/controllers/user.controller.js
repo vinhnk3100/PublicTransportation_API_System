@@ -9,7 +9,7 @@ exports.get = async (req, res, next) => {
     try {
         const user = await UserModel.find({}).lean().exec();
 
-        if (!user) {
+        if (!user || user.length < 1) {
             return res.json({
                 success: true,
                 message: "No user existed right now!"
@@ -23,7 +23,7 @@ exports.get = async (req, res, next) => {
             users: user
         })
     } catch (e) {
-        console.log("ERR: Register Error: ", e);
+        console.log("UserController: Get User Error: ", e);
         next(e);
     }
 }
@@ -46,7 +46,45 @@ exports.create = async (req, res, next) => {
             user: newUser
         })
     } catch (e) {
-        console.log("ERR: Register Error: ", e);
+        console.log("UserController: Create User Error: ", e);
+        next(e);
+    }
+}
+
+// Update by Id
+exports.update = async (req, res, next) => {
+    const { userId } = req.params;
+    const update = req.body;
+    
+    try {
+        let updateUser = await UserModel.findByIdAndUpdate({ _id: userId }, update, {
+            new: true
+        })
+
+        if (!updateUser || updateUser.length < 1) {
+            return res.json({
+                success: true,
+                message: "No user existed right now!"
+            })
+        }
+
+        if (update.password) {
+            return res.json({
+                success: true,
+                message: `Can not change password!`,
+            })
+        }
+
+        await updateUser.save()
+
+        return res.json({
+            success: true,
+            message: `User ${userId} updated!`,
+            user: updateUser
+        })
+
+    } catch (e) {
+        console.log("UserController: Update User Error: ", e);
         next(e);
     }
 }
@@ -58,7 +96,7 @@ exports.delete = async (req, res, next) => {
     try {
         const user = await UserModel.findByIdAndDelete({ _id: userId })
 
-        if (!user) {
+        if (!user || user.length < 1) {
             return res.json({
                 success: false,
                 message: "User not existed!"
@@ -70,7 +108,7 @@ exports.delete = async (req, res, next) => {
             message: `User ${userId} deleted!`
         })
     } catch (e) {
-        console.log("ERR: Register Error: ", e);
+        console.log("UserController: Delete User Error: ", e);
         next(e);
     }
 }

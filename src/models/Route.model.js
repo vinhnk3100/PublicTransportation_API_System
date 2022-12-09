@@ -11,6 +11,10 @@ const RouteSchema = new Schema({
         type: Number,
         required: true,
     },
+    route_price: {
+        type: Number,
+        required: true
+    },
     time_start: {
         type: String, 
         required: true,
@@ -25,7 +29,13 @@ const RouteSchema = new Schema({
             station_name: {type: String, required: true,}
         }
     ],
-    vehicles: [{type: Schema.Types.ObjectId, ref: "Vehicles"}],
+    vehicles: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: "Vehicles", 
+            required: true
+        }
+    ],
 }, {timestamps: true} )
 
 const Route = mongoose.model("Routes", RouteSchema)

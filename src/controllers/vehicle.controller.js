@@ -1,5 +1,6 @@
 // Vehicle Controller: Get - Create - Update - Delete
 
+const VEHICLE_TYPE = require("../helpers/vehicleTypes")
 const VehicleModel = require("../models/Vehicle.model");
 
 // get
@@ -25,7 +26,7 @@ exports.get = async (req, res, next) => {
     }
 }
 
-// Get vehicle by id
+// Get by id
 exports.getById = async (req, res, next) => {
     const { vehicleId } = req.params;
 
@@ -49,14 +50,42 @@ exports.getById = async (req, res, next) => {
     }
 }
 
+// update
+exports.update = async (req, res, next) => {
+    const { vehicleId } = req.params;
+    const update = req.body;
+
+    try {
+        let updateVehicle = await VehicleModel.findByIdAndUpdate({ _id: vehicleId }, update, { new: true }).exec();
+
+        if (!updateVehicle || updateVehicle.length < 1) {
+            return res.json({
+                success: false,
+                message: "No vehicle existed!"
+            })
+        }
+
+        return res.json({
+            success: true,
+            message: `Vehicle ${vehicleId} updated`,
+            vehicle: updateVehicle
+        })
+        
+    } catch (e) {
+        console.log("ERR: Update Vehicle Error: ", e);
+        next(e);
+    }
+}
+
 // create
 exports.create = async (req, res, next) => {
     const { vehicle_type, no_of_seats, vehicle_brand, vehicle_model, vehicle_mgt_unit } = req.body;
+
     try {
         const newVehicle = await VehicleModel.create({
-            vehicle_type: vehicle_type, 
-            no_of_seats: no_of_seats, 
-            vehicle_brand: vehicle_brand, 
+            vehicle_type: parseInt(vehicle_type) === 1 ? VEHICLE_TYPE.BUS : parseInt(vehicle_type) === 2 ? VEHICLE_TYPE.TRAIN : VEHICLE_TYPE.SUBWAY,
+            no_of_seats: no_of_seats,
+            vehicle_brand: vehicle_brand,
             vehicle_model: vehicle_model,
             vehicle_mgt_unit: vehicle_mgt_unit
         })
@@ -67,7 +96,7 @@ exports.create = async (req, res, next) => {
             vehicle: newVehicle
         })
 
-    } catch (error) {
+    } catch (e) {
         console.log("ERR: Create Vehicle Error: ", e);
         next(e);
     }
