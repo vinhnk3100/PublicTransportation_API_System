@@ -9,7 +9,7 @@ Router.get('/', roleValidation.staff, userController.get);
 Router.post('/create', roleValidation.admin, userController.create);
 
 // Update User
-Router.put('/:userId', roleValidation.admin, userController.update);
+Router.put('/:userId', userController.update);
 
 // Delete User
 Router.delete('/:userId', roleValidation.admin, userController.delete);

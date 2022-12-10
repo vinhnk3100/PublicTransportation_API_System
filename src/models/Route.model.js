@@ -15,14 +15,20 @@ const RouteSchema = new Schema({
         type: Number,
         required: true
     },
-    time_start: {
-        type: String, 
-        required: true,
-    },
-    time_end: {
-        type: String, 
-        required: true,
-    },
+    time_start: [
+        {
+            _id: false,
+            hours: {type: Number, required: true},
+            minutes: {type: Number, required: true}
+        }
+    ],
+    time_end: [
+        {
+            _id: false,
+            hours: {type: Number, required: true},
+            minutes: {type: Number, required: true}
+        }
+    ],
     stations: [
         {
             _id: false,

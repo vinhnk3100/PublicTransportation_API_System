@@ -1,7 +1,8 @@
 // UserController - Get, Create, Update, Delete
 // Some functions specify only for administrator
 
-const UserModel = require('../models/User.model')
+const UserModel = require('../models/User.model');
+const ROLE = require("../helpers/roles");
 const bcrypt = require('bcrypt');
 
 // Get
@@ -55,6 +56,13 @@ exports.create = async (req, res, next) => {
 exports.update = async (req, res, next) => {
     const { userId } = req.params;
     const update = req.body;
+    
+    if (update.role && req.session.role !== ROLE.ADMIN) {
+        return res.json({
+            success: true,
+            message: "Access denied. You do not have permission to change role!"
+        })
+    }
     
     try {
         let updateUser = await UserModel.findByIdAndUpdate({ _id: userId }, update, {

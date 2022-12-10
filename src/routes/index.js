@@ -10,7 +10,7 @@ const routes = app => {
 
     // Handle error nếu không decode được params
     app.get('*', (req, res) => {
-        res.status(404).render('error');
+        return res.status(404).end("API Not Found");
     });
 
     app.use((err, req, res, next) => {
@@ -21,7 +21,7 @@ const routes = app => {
         }
         if (err) {
             console.log('From index.routes: Error', err);
-            return res.redirect('/error');
+            return res.status(404).end("API Not Found");
         }
         next();
     });

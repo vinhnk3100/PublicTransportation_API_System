@@ -32,6 +32,7 @@ exports.getById = async (req, res, next) => {
 
     try {
         const vehicle = await VehicleModel.findOne({ _id: vehicleId }).populate("vehicle_mgt_unit").lean().exec();
+        
         if (!vehicle || vehicle.length < 1) {
             return res.json({
                 success: true,
