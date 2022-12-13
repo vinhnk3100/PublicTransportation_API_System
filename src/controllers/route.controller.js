@@ -72,6 +72,18 @@ exports.create = async (req, res, next) => {
 
         const vehicleExist = await VehicleModel.find({ _id: vehicleId }).lean().exec()
 
+        const vehicleFilter = vehicleExist.filter(vehicle => { 
+            return vehicle.vehicle_available === false;
+         });
+
+        if (!vehicleFilter || vehicleFilter.length > 0) {
+            return res.json({
+                success: true,
+                message: "Vehicle currently unavailable",
+                vehicles: vehicleFilter
+            });
+        }
+
         await VehicleModel.updateMany(
             { _id: vehicleId }, 
             {"vehicle_available": false,},
@@ -111,9 +123,22 @@ exports.delete = async (req, res, next) => {
     const { routeId } = req.params;
 
     try {
-        const route = await RouteModel.findByIdAndDelete({ _id: routeId })
-
-        if (!route || route.length < 1) {
+        const routes = await RouteModel.findByIdAndDelete({ _id: routeId }).exec(function (err, route) {
+            if (err) {
+                console.log("ERR: Delete Route: ", err);
+                next(err)
+            }
+            
+            route?.forEach(async (x) => {
+                await VehicleModel.updateMany(
+                    { _id: x.vehicles }, 
+                    {"vehicle_available": true,},
+                    { new: true })
+                .exec();
+            })
+        })
+        
+        if (!routes || routes.length < 1) {
             return res.json({
                 success: true,
                 message: "Route not existed!"
