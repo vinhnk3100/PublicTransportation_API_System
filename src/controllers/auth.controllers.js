@@ -8,7 +8,7 @@ const session = require('express-session');
 exports.login = async (req, res, next) => {
     const { username, password } = req.body;
     try {
-        const user = await User.findOne({username: username}).lean().exec();
+        const user = await User.findOne(isNaN(username) ? {username: username} : {phoneNumber: username}).lean().exec();
         if (user) {
             const hashedPassword = user.password;
             if (bcrypt.compareSync(password, hashedPassword)) {

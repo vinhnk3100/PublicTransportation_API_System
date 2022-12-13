@@ -2,6 +2,7 @@
 
 const RouteModel = require("../models/Route.model");
 const VehicleModel = require("../models/Vehicle.model");
+const removeUnvalidVehicleId = require("../utils/removeUnvalidVehicleId");
 
 // Get route
 exports.get = async (req, res, next) => {
@@ -65,46 +66,40 @@ exports.create = async (req, res, next) => {
                 message: "Field can not be empty"
             })
         }
+        
+        // If Vehicle ID is invalid, this function will return undefined in Vehicle List then remove undefined from it list.
+        const vehicleId = removeUnvalidVehicleId(vehicles)
 
-        const vehicleExist = await VehicleModel.find({ _id: vehicles }).lean().exec(function (error, records) {
-            records.forEach(record => {
-                const vehicleInList = vehicles.filter(vehicle => {return vehicle !== record._id.toHexString()})
-                console.log(vehicleInList)
+        const vehicleExist = await VehicleModel.find({ _id: vehicleId }).lean().exec()
+
+        await VehicleModel.updateMany(
+            { _id: vehicleId }, 
+            {"vehicle_available": false,},
+            { new: true })
+            .exec();
+
+        if (vehicles.length - vehicleExist.length > 0) {
+            return res.json({
+                success: false,
+                message: "Vehicles list have invalid Vehicle ID"
             })
+        }
+
+        const newRoute = await RouteModel.create({
+            route_name: route_name,
+            distance_length: distance_length,
+            route_price: distance_length < 15 ? 5000 : distance_length < 25 ? 6000 : 7000,
+            time_start: time_start,
+            time_end: time_end,
+            stations: stations,
+            vehicles: vehicles
         })
 
-        console.log(vehicleExist)
-
-        // if (!vehicleExist || vehicleExist.length < 1) {
-        //     return res.json({
-        //         success: false,
-        //         message: "Vehicles field can not be empty"
-        //     })
-        // } else if (vehicles.length - vehicleExist.length > 0) {
-        //     const a = vehicleExist.map(vehicle => {
-        //         console.log(vehicle._id)
-        //     })
-        //     return res.json({
-        //         success: false,
-        //         message: `There were random vehicle ids existed in list`
-        //     })
-        // }
-
-        // const newRoute = await RouteModel.create({
-        //     route_name: route_name,
-        //     distance_length: distance_length,
-        //     route_price: distance_length < 15 ? 5000 : distance_length < 25 ? 6000 : 7000,
-        //     time_start: time_start,
-        //     time_end: time_end,
-        //     stations: stations,
-        //     vehicles: vehicles
-        // })
-
-        // return res.json({
-        //     success: true,
-        //     message: "RouteController: Create Route Success!",
-        //     route: newRoute
-        // })
+        return res.json({
+            success: true,
+            message: "RouteController: Create Route Success!",
+            route: newRoute,
+        })
     } catch (e) {
         console.log("ERR: Register Error: ", e);
         next(e);
