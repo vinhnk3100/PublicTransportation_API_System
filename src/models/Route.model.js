@@ -15,20 +15,14 @@ const RouteSchema = new Schema({
         type: Number,
         required: true
     },
-    time_start: [
-        {
-            _id: false,
-            hours: {type: Number, required: true},
-            minutes: {type: Number, required: true}
-        }
-    ],
-    time_end: [
-        {
-            _id: false,
-            hours: {type: Number, required: true},
-            minutes: {type: Number, required: true}
-        }
-    ],
+    time_start: {
+        hours: {type: Number, required: true},
+        minutes: {type: Number, required: true}
+    },
+    time_end: {
+        hours: {type: Number, required: true},
+        minutes: {type: Number, required: true}
+    },
     stations: [
         {
             _id: false,
@@ -38,7 +32,7 @@ const RouteSchema = new Schema({
     vehicles: [
         {
             type: Schema.Types.ObjectId,
-            ref: "Vehicles", 
+            ref: "Vehicles",
             required: true
         }
     ],

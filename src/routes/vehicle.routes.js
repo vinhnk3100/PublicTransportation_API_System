@@ -6,7 +6,7 @@ const vehicleController = require("../controllers/vehicle.controller");
 Router.get('/', roleValidation.staff, vehicleController.get);
 
 // Searching - Vehicle available (Not routing)
-Router.get("/search", roleValidation.admin, vehicleController.getAvailable);
+Router.get("/search", vehicleController.getAvailable);
 
 // Get vehicle by id
 Router.get("/:vehicleId", roleValidation.admin, vehicleController.getById);

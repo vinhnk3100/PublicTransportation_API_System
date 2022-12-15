@@ -123,32 +123,29 @@ exports.delete = async (req, res, next) => {
     const { routeId } = req.params;
 
     try {
-        const routes = await RouteModel.findByIdAndDelete({ _id: routeId }).exec(function (err, route) {
-            if (err) {
-                console.log("ERR: Delete Route: ", err);
-                next(err)
-            }
-            
-            route?.forEach(async (x) => {
-                await VehicleModel.updateMany(
-                    { _id: x.vehicles }, 
-                    {"vehicle_available": true,},
-                    { new: true })
-                .exec();
-            })
-        })
+        const routes = await RouteModel.find({ _id: routeId }).lean().exec();
         
         if (!routes || routes.length < 1) {
             return res.json({
                 success: true,
                 message: "Route not existed!"
-            })
-        }
+            });
+        };
+
+        routes.forEach(async (x) => {
+            await VehicleModel.updateMany(
+                { _id: x.vehicles }, 
+                {"vehicle_available": true,},
+                { new: true })
+            .exec();
+        });
+
+        await RouteModel.findByIdAndDelete({ _id: routeId }).lean().exec();
 
         return res.json({
             success: true,
             message: `Route ${routeId} deleted!`
-        })
+        });
         
     } catch (e) {
         console.log("ERR: Register Error: ", e);

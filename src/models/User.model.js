@@ -19,7 +19,8 @@ const UserSchema = new Schema({
     role: {
         type: String,
         default: 'customer'
-    }
+    },
+    // ticket_history: {}
 })
 
 const User = mongoose.model('Users', UserSchema)
