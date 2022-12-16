@@ -1,14 +1,15 @@
 // AuthController - Register & Login actions
 
-const User = require('../models/User.model')
 const bcrypt = require('bcrypt');
+const { UserService } = require("../services/index")
 const { generateToken } = require('../utils/jsonTokenGenerator');
 const session = require('express-session');
 
 exports.login = async (req, res, next) => {
     const { username, password } = req.body;
     try {
-        const user = await User.findOne(isNaN(username) ? {username: username} : {phoneNumber: username}).lean().exec();
+        const user = await UserService.getAuthLoginUser(username);
+
         if (user) {
             const hashedPassword = user.password;
             if (bcrypt.compareSync(password, hashedPassword)) {
@@ -40,12 +41,7 @@ exports.login = async (req, res, next) => {
 exports.register = async (req, res, next) => {
     const { username, fullname, password, phoneNumber } = req.body
     try {
-        const newUser = await User.create({
-            username: username,
-            fullname: fullname,
-            password: bcrypt.hashSync(password, 10),
-            phoneNumber: phoneNumber,
-        })
+        const newUser = await UserService.createUser(username, fullname, password, phoneNumber);
 
         return res.json({
             success: true,

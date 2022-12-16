@@ -37,11 +37,6 @@ const VehicleSchema = new Schema({
         required: true,
         default: true
     },
-    vehicle_current_on_route: {
-        type: Schema.Types.ObjectId, 
-        ref: "Routes",
-        default: null,
-    },
     vehicle_mgt_unit: {
         required: true,
         type: Schema.Types.ObjectId, 

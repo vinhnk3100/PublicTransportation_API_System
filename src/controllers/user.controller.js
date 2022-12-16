@@ -1,14 +1,12 @@
 // UserController - Get, Create, Update, Delete
 // Some functions specify only for administrator
-
-const UserModel = require('../models/User.model');
 const ROLE = require("../helpers/roles");
-const bcrypt = require('bcrypt');
+const { UserService } = require('../services/index')
 
 // Get
 exports.get = async (req, res, next) => {
     try {
-        const user = await UserModel.find({}).lean().exec();
+        const user = await UserService.getUser();
 
         if (!user || user.length < 1) {
             return res.json({
@@ -32,14 +30,9 @@ exports.get = async (req, res, next) => {
 // Create - Admin only
 exports.create = async (req, res, next) => {
     const { username, fullname, password, phoneNumber, role } = req.body
+
     try {
-        const newUser = await UserModel.create({
-            username: username,
-            fullname: fullname,
-            password: bcrypt.hashSync(password, 10),
-            phoneNumber: phoneNumber,
-            role: role
-        })
+        const newUser = await UserService.createUser(username, fullname, password, phoneNumber, role)
 
         return res.json({
             success: true,
@@ -65,9 +58,7 @@ exports.update = async (req, res, next) => {
     }
     
     try {
-        let updateUser = await UserModel.findByIdAndUpdate({ _id: userId }, update, {
-            new: true
-        })
+        let updateUser = await UserService.updateUser(userId, update)
 
         if (!updateUser || updateUser.length < 1) {
             return res.json({
@@ -102,7 +93,7 @@ exports.delete = async (req, res, next) => {
     const { userId } = req.params;
 
     try {
-        const user = await UserModel.findByIdAndDelete({ _id: userId })
+        const user = await UserService.deleteUser(userId)
 
         if (!user || user.length < 1) {
             return res.json({
@@ -113,7 +104,8 @@ exports.delete = async (req, res, next) => {
 
         return res.json({
             success: true,
-            message: `User ${userId} deleted!`
+            message: `User ${userId} deleted!`,
+            user_delete: user
         })
     } catch (e) {
         console.log("UserController: Delete User Error: ", e);

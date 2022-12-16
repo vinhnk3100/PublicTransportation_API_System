@@ -2,12 +2,13 @@
 
 const RouteModel = require("../models/Route.model");
 const VehicleModel = require("../models/Vehicle.model");
-const removeUnvalidVehicleId = require("../utils/removeUnvalidVehicleId");
+const { RouteService } = require('../services/index');
 
 // Get route
 exports.get = async (req, res, next) => {
     try {
-        const routes = await RouteModel.find({}).populate("vehicles").lean().exec();
+        // Query Database Services
+        const routes = await RouteService.getRoute()
         
         if (!routes || routes.length < 1) {
             return res.json({
@@ -31,9 +32,9 @@ exports.get = async (req, res, next) => {
 // Get route by id
 exports.getById = async (req, res, next) => {
     const { routeId } = req.params
-
     try {
-        const route = await RouteModel.findOne({ _id: routeId }).populate("vehicles").lean().exec();
+        // Query Database Services
+        const route = await RouteService.getRouteById(routeId)
 
         if (!route || route.length < 1) {
             return res.json({
@@ -59,53 +60,8 @@ exports.create = async (req, res, next) => {
     const { route_name, distance_length, time_start, time_end, stations, vehicles } = req.body;
 
     try {
-        // Handling when stations and vehicles empty list
-        if (stations.length < 1 || vehicles.length < 1 || time_start.length < 1 || time_end.length < 1) {
-            return res.json({
-                success: false,
-                message: "Field can not be empty"
-            })
-        }
-        
-        // If Vehicle ID is invalid, this function will return undefined in Vehicle List then remove undefined from it list.
-        const vehicleId = removeUnvalidVehicleId(vehicles)
-
-        const vehicleExist = await VehicleModel.find({ _id: vehicleId }).lean().exec()
-
-        const vehicleFilter = vehicleExist.filter(vehicle => { 
-            return vehicle.vehicle_available === false;
-         });
-
-        if (!vehicleFilter || vehicleFilter.length > 0) {
-            return res.json({
-                success: true,
-                message: "Vehicle currently unavailable",
-                vehicles: vehicleFilter
-            });
-        }
-
-        await VehicleModel.updateMany(
-            { _id: vehicleId }, 
-            {"vehicle_available": false,},
-            { new: true })
-            .exec();
-
-        if (vehicles.length - vehicleExist.length > 0) {
-            return res.json({
-                success: false,
-                message: "Vehicles list have invalid Vehicle ID"
-            })
-        }
-
-        const newRoute = await RouteModel.create({
-            route_name: route_name,
-            distance_length: distance_length,
-            route_price: distance_length < 15 ? 5000 : distance_length < 25 ? 6000 : 7000,
-            time_start: time_start,
-            time_end: time_end,
-            stations: stations,
-            vehicles: vehicles
-        })
+        // Query Database Services
+        const newRoute = await RouteService.createRoute(route_name, distance_length, time_start, time_end, stations, vehicles);
 
         return res.json({
             success: true,
@@ -123,7 +79,8 @@ exports.delete = async (req, res, next) => {
     const { routeId } = req.params;
 
     try {
-        const routes = await RouteModel.find({ _id: routeId }).lean().exec();
+        // Query Database Services
+        const routes = await RouteService.getRouteById(routeId);
         
         if (!routes || routes.length < 1) {
             return res.json({
@@ -140,11 +97,13 @@ exports.delete = async (req, res, next) => {
             .exec();
         });
 
-        await RouteModel.findByIdAndDelete({ _id: routeId }).lean().exec();
+        // Query Database Services
+        await RouteService.deleteRoute(routeId);
 
         return res.json({
             success: true,
-            message: `Route ${routeId} deleted!`
+            message: `Route ${routeId} deleted!`,
+            route_delete: routes
         });
         
     } catch (e) {
