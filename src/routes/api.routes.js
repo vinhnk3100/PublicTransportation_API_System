@@ -4,6 +4,7 @@ const userRouter = require('./user.routes');
 const vehicleRouter = require('./vehicle.routes');
 const managementUnitRouter = require("./managementUnit.routes");
 const routeRouter = require("./route.routes")
+const ticketRoute = require("./ticket.routes")
 
 // api/auth - Login & Registation
 Router.use('/auth', authRouter);
@@ -19,6 +20,9 @@ Router.use('/mgtunit', managementUnitRouter);
 
 // api/route - Route
 Router.use('/route', routeRouter);
+
+// api/ticket - Ticket
+Router.use('/ticket', ticketRoute)
 
 // Handle error
 Router.use((err, req, res, next) => {
