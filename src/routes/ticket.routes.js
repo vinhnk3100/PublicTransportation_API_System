@@ -8,4 +8,7 @@ Router.get('/', roleValidation.staff, ticketController.get);
 // Create ticket
 Router.post('/create', roleValidation.admin, ticketController.create);
 
+// Delete ticket
+Router.delete('/:ticketId', roleValidation.admin, ticketController.delete);
+
 module.exports = Router;

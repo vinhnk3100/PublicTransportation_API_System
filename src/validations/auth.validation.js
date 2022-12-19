@@ -1,5 +1,5 @@
 const { check } = require('express-validator');
-const { handleValidationResult } = require('../utils/handleValidationResult');
+const { handleValidationResult } = require('../utils/handleValidationResult.util');
 
 exports.loginValidation = [
     check("username")

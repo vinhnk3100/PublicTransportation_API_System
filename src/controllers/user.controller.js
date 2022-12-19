@@ -3,6 +3,8 @@
 const ROLE = require("../helpers/roles");
 const { UserService } = require('../services/index')
 
+// ========================= CRUD Sections
+
 // Get
 exports.get = async (req, res, next) => {
     try {
@@ -27,12 +29,36 @@ exports.get = async (req, res, next) => {
     }
 }
 
+// Get by UID
+exports.getById = async (req, res, next) => {
+    const { userId } = req.params;
+    try {
+        const user = await UserService.getUserById(userId);
+
+        if (!user || user.length < 1) {
+            return res.json({
+                success: true,
+                message: "User is not existed!"
+            })
+        }
+
+        return res.json({
+            success: true,
+            message: "User found!",
+            user: user
+        })
+    } catch (e) {
+        console.log("UserController: Get User By Id Error: ", e);
+        next(e);
+    }
+}
+
 // Create - Admin only
 exports.create = async (req, res, next) => {
-    const { username, fullname, password, phoneNumber, role } = req.body
+    const { username, fullname, password, phoneNumber, role, wallet } = req.body
 
     try {
-        const newUser = await UserService.createUser(username, fullname, password, phoneNumber, role)
+        const newUser = await UserService.createUser(username, fullname, password, phoneNumber, role, wallet);
 
         return res.json({
             success: true,
@@ -110,5 +136,35 @@ exports.delete = async (req, res, next) => {
     } catch (e) {
         console.log("UserController: Delete User Error: ", e);
         next(e);
+    }
+}
+
+// ========================= Utilities Sections
+
+// Buy Ticket
+exports.buyTicket = async (req, res, next) => {
+    const currentUserId = req.session.userId;
+    const route = req.routeInvalidFiltered;
+    try {
+        const user = await UserService.getUserById(currentUserId);
+
+        if (!user || user.length < 1) {
+            return res.json({
+                success: true,
+                message: "User is not existed!"
+            })
+        }
+
+        // const userBuyTicket = await UserService.userBuyTicket(route, currentUserId);
+
+        // return res.json({
+        //     success: true,
+        //     message: "Bought Ticket success",
+        //     ticket: userBuyTicket
+        // })
+
+    } catch (e) {
+        console.log("UserController: Buy Ticket Error: ", e);
+        next(e); 
     }
 }

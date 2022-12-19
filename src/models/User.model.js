@@ -20,6 +20,11 @@ const UserSchema = new Schema({
         type: String,
         default: 'customer'
     },
+    wallet: {
+        type: Number,
+        default: 0,
+        required: true
+    }
     // ticket_history: {}
 })
 

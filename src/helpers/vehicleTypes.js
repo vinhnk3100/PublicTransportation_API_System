@@ -1,7 +1,5 @@
 const VEHICLE_TYPE = {
-    BUS: "Bus",
-    TRAIN: "Train",
-    SUBWAY: "Subway"
+    BUS: "Bus"
 }
 
 module.exports = VEHICLE_TYPE

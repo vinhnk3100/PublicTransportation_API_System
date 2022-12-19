@@ -3,7 +3,7 @@
 const TicketModel = require('../models/Ticket.model')
 const { TicketService } = require('../services/index')
 
-// Get
+// get
 exports.get = async (req, res, next) => {
     try {
         const ticket = await TicketService.getTicket();
@@ -27,19 +27,37 @@ exports.get = async (req, res, next) => {
     }
 }
 
+// create
 exports.create = async (req, res, next) => {
-    const {customer_name, route_name, ticket_vehicle, ticket_price, is_valid} = req.body
+    const { customer_name, route_name, ticket_vehicle, ticket_price, is_valid } = req.body
     try {
-        // console.log(customer_name, route_name, ticket_vehicle, ticket_price, is_valid)
         const ticket = await TicketService.createTicket(customer_name, route_name, ticket_vehicle, ticket_price, is_valid);
         
         return res.json({
             success: true,
-            message: "Create ticket successfully",
+            message: "Ticket create!",
             ticket: ticket
         })
     } catch (e) {
-        console.log("TicketController: Create Tcket Error: ", e);
+        console.log("TicketController: Create Ticket Error: ", e);
+        next(e);
+    }
+}
+
+// delete
+exports.delete = async (req, res, next) => {
+    const { ticketId } = req.body;
+
+    try {
+        const ticket = await TicketService.deleteTicket(ticketId);
+
+        return res.json({
+            success: true,
+            message: "Ticket delete successfully",
+            ticket: ticket
+        })
+    } catch (e) {
+        console.log("TicketController: Delete Ticket Error: ", e);
         next(e);
     }
 }

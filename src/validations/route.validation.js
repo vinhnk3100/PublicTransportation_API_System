@@ -1,9 +1,7 @@
 const { check } = require('express-validator');
-const { handleValidationResult } = require('../utils/handleValidationResult');
-
-const VehicleModel = require("../models/Vehicle.model");
-const VehicleService = require("../services/vehicle.service")
-const removeUnvalidVehicleId = require("../utils/removeUnvalidVehicleId");
+const { handleValidationResult } = require('../utils/handleValidationResult.util');
+const removeUnvalidObjectId = require("../utils/removeUnvalidObjectId.utils");
+const { RouteService, VehicleService } = require('../services');
 
 exports.createRouteValidation = [
     check("route_name")
@@ -43,35 +41,60 @@ exports.createRouteValidation = [
 exports.filterInvalidVehicle = async (req, res, next) => {
     const { vehicles } = req.body;
 
-    // // If Vehicle ID is invalid, this function will return undefined in Vehicle List then remove undefined from it list.
-    const vehicleId = removeUnvalidVehicleId(vehicles)
+    try {
+        // // If Vehicle ID is invalid, this function will return undefined in Vehicle List then remove undefined from it list.
+        const vehicleId = removeUnvalidObjectId.listOfItems(vehicles)
 
-    const vehicleExist = await VehicleService.getVehicleById(vehicleId);
+        const vehicleExist = await VehicleService.getVehicleById(vehicleId);
 
-    const vehicleFilter = vehicleExist.filter(vehicle => { 
-        return vehicle.vehicle_available === false;
-    });
-
-    // ===== Check if Vehicle is available for the next Tour
-    if (!vehicleFilter || vehicleFilter.length > 0) {
-        return res.json({
-            success: true,
-            message: "Vehicle currently unavailable",
-            vehicles: vehicleFilter
+        const vehicleFilter = vehicleExist.filter(vehicle => { 
+            return vehicle.vehicle_available === false;
         });
-    }
-    
-    // ===== Check if in vehicles id list have an invalid ID
-    if (vehicles.length - vehicleExist.length > 0) {
-        return res.json({
-            success: false,
-            message: "Vehicles list have invalid Vehicle ID"
-        })
-    }
 
-    await VehicleService.updateFilterVehicle(vehicleId);
+        // ===== Check if Vehicle is available for the next Tour
+        if (!vehicleFilter || vehicleFilter.length > 0) {
+            return res.json({
+                success: true,
+                message: "Vehicle currently unavailable",
+                vehicles: vehicleFilter
+            });
+        }
+        
+        // ===== Check if in vehicles id list have an invalid ID
+        if (vehicles.length - vehicleExist.length > 0) {
+            return res.json({
+                success: false,
+                message: "Vehicles list have invalid Vehicle ID"
+            })
+        }
 
-    next();
+        await VehicleService.updateFilterVehicle(vehicleId);
+
+        next();
+    } catch (e) {
+        throw new Error(e.message)
+    }
+}
+
+exports.filterUrlInvalidRouteId = async (req, res, next) => {
+    const routeId = req.query.routeId
+    try {
+        const _routeId = removeUnvalidObjectId.singleItem(routeId)
+
+        const route = await RouteService.getRouteById(_routeId);
+
+        if (!route || route.length < 1) {
+            return res.json({
+                success: true,
+                message: "No route found!"
+            })
+        }
+        req.routeInvalidFiltered = route;
+
+        next();
+    } catch (e) {
+        throw new Error(e.message)
+    }
 }
 
 module.exports = this

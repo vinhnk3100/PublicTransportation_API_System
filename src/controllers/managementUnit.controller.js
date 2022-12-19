@@ -1,6 +1,5 @@
 // Management Unit Controller: Get - Create - Update - Delete
 
-const ManagementUnitModel = require("../models/ManagementUnit.model")
 const { ManagementUnitService } = require("../services/index")
 
 // Get

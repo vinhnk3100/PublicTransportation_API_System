@@ -29,7 +29,7 @@ const getAvailable = async (vehicleIdQuery, findFilter, findFilterId) => {
 const createVehicle = async (vehicle_type, no_of_seats, vehicle_brand, vehicle_model, vehicle_mgt_unit) => {
     try {
         return await VehicleModel.create({
-            vehicle_type: parseInt(vehicle_type) === 1 ? VEHICLE_TYPE.BUS : parseInt(vehicle_type) === 2 ? VEHICLE_TYPE.TRAIN : VEHICLE_TYPE.SUBWAY,
+            vehicle_type: parseInt(vehicle_type) === 1 ? VEHICLE_TYPE.BUS : VEHICLE_TYPE.BUS,
             no_of_seats: no_of_seats,
             vehicle_brand: vehicle_brand,
             vehicle_model: vehicle_model,

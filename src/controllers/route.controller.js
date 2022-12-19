@@ -1,6 +1,4 @@
 // Route Controller: Get - Create - Update - Delete
-
-const RouteModel = require("../models/Route.model");
 const VehicleModel = require("../models/Vehicle.model");
 const { RouteService } = require('../services/index');
 

@@ -2,7 +2,7 @@
 
 const bcrypt = require('bcrypt');
 const { UserService } = require("../services/index")
-const { generateToken } = require('../utils/jsonTokenGenerator');
+const { generateToken } = require('../utils/jsonTokenGenerator.utils');
 const session = require('express-session');
 
 exports.login = async (req, res, next) => {
@@ -14,6 +14,7 @@ exports.login = async (req, res, next) => {
             const hashedPassword = user.password;
             if (bcrypt.compareSync(password, hashedPassword)) {
                 req.session.role = user.role;
+                req.session.userId = user._id;
                 return res
                     .cookie('access_token', generateToken({ id: user['_id'].toString()}), {httpOnly: true})
                     .json({
