@@ -1,6 +1,6 @@
 // Route Controller: Get - Create - Update - Delete
-const VehicleModel = require("../models/Vehicle.model");
-const { RouteService } = require('../services/index');
+const { RouteService, TicketService } = require('../services/index');
+const updateValidTicketRoute = require('../utils/updateValidTicketRoute.utils');
 
 // Get route
 exports.get = async (req, res, next) => {
@@ -79,6 +79,15 @@ exports.delete = async (req, res, next) => {
     try {
         // Query Database Services
         const routes = await RouteService.getRouteById(routeId);
+
+        const tickets = await TicketService.getTicket();
+
+        const ticketRouteId = await updateValidTicketRoute(routes, tickets)
+
+        console.log("Ticket and Route ID: ",ticketRouteId)
+
+        // If route is deleted, ticket will false
+        // const updateTicketValid = await TicketService.updateTicket( { is_valid: false });
         
         if (!routes || routes.length < 1) {
             return res.json({
@@ -87,22 +96,22 @@ exports.delete = async (req, res, next) => {
             });
         };
 
-        routes.forEach(async (x) => {
-            await VehicleModel.updateMany(
-                { _id: x.vehicles }, 
-                {"vehicle_available": true,},
-                { new: true })
-            .exec();
-        });
+        // routes.forEach(async (x) => {
+        //     await VehicleModel.updateMany(
+        //         { _id: x.vehicles }, 
+        //         {"vehicle_available": true,},
+        //         { new: true })
+        //     .exec();
+        // });
 
-        // Query Database Services
-        await RouteService.deleteRoute(routeId);
+        // // Query Database Services
+        // await RouteService.deleteRoute(routeId);
 
-        return res.json({
-            success: true,
-            message: `Route ${routeId} deleted!`,
-            route_delete: routes
-        });
+        // return res.json({
+        //     success: true,
+        //     message: `Route ${routeId} deleted!`,
+        //     route_delete: routes
+        // });
         
     } catch (e) {
         console.log("ERR: Register Error: ", e);

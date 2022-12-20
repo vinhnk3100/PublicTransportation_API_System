@@ -27,6 +27,16 @@ const createTicket = async (customer_name, route_name, ticket_vehicle, ticket_pr
     }
 }
 
+const updateTicket = async(ticketId, update) => {
+    try {
+        return await TicketModel.findByIdAndUpdate({ _id: ticketId }, update, {
+            new: true
+        })
+    } catch (e) {
+        throw new Error(e.message)
+    }
+}
+
 const deleteTicket = async (ticketId) => {
     try {
         return await TicketModel.findByIdAndDelete({ _id: ticketId })
@@ -42,5 +52,6 @@ const deleteTicket = async (ticketId) => {
 module.exports = {
     getTicket,
     createTicket,
+    updateTicket,
     deleteTicket
 }
