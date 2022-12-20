@@ -146,6 +146,7 @@ exports.buyTicket = async (req, res, next) => {
     const currentUserId = req.session.userId;
     const route = req.routeInvalidFiltered;
     try {
+        // Check if user existed
         const user = await UserService.getUserById(currentUserId);
 
         if (!user || user.length < 1) {
@@ -155,13 +156,21 @@ exports.buyTicket = async (req, res, next) => {
             })
         }
 
-        // const userBuyTicket = await UserService.userBuyTicket(route, currentUserId);
+        // Check user wallet is available for buying ticket
 
-        // return res.json({
-        //     success: true,
-        //     message: "Bought Ticket success",
-        //     ticket: userBuyTicket
-        // })
+        const getUserWallet = user.map(u => {
+            return {
+                wallet: u.wallet
+            }
+        });
+        const userWallet = getUserWallet[0].wallet;
+
+        const userBuyTicket = await UserService.userBuyTicket(route, currentUserId, userWallet);
+
+        return res.json({
+            success: true,
+            data: userBuyTicket
+        })
 
     } catch (e) {
         console.log("UserController: Buy Ticket Error: ", e);

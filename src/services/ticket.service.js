@@ -29,7 +29,11 @@ const createTicket = async (customer_name, route_name, ticket_vehicle, ticket_pr
 
 const deleteTicket = async (ticketId) => {
     try {
-        return await TicketModel.findByIdAndDelete({ _id: ticketId }).lean().exec();
+        return await TicketModel.findByIdAndDelete({ _id: ticketId })
+            .populate("customer_name", "fullname")
+            .populate("route_name", "route_name")
+            .populate("ticket_vehicle", "vehicle_type")
+            .populate('ticket_price', "route_price").lean().exec();
     } catch (e) {
         throw new Error(e.message)
     }

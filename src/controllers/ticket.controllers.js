@@ -46,7 +46,7 @@ exports.create = async (req, res, next) => {
 
 // delete
 exports.delete = async (req, res, next) => {
-    const { ticketId } = req.body;
+    const { ticketId } = req.params;
 
     try {
         const ticket = await TicketService.deleteTicket(ticketId);

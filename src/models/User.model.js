@@ -24,8 +24,13 @@ const UserSchema = new Schema({
         type: Number,
         default: 0,
         required: true
-    }
-    // ticket_history: {}
+    },
+    history_purchase: [
+        {
+            message: {type: String, default: null},
+            data_purchase: {type: Object, default: null}
+        }
+    ]
 })
 
 const User = mongoose.model('Users', UserSchema)
