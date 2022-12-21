@@ -19,7 +19,7 @@ app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 app.use(
     session({
         secret: process.env.SESSION_SECRET_KEY,
-        saveUninitialized: true,
+        saveUninitialized: false,
         cookie: { maxAge: 1000 * 60 * 60 * 24 },
         resave: false,
     })

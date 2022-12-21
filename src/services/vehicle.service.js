@@ -49,9 +49,9 @@ const updateVehicle = async (vehicleId, update) => {
 }
 
 // Update vehicle on Filtering Route action (Utilities for updating)
-const updateFilterVehicle = async (vehicleId) => {
+const updateFilterVehicle = async (vehicleId, update) => {
     try {
-        return await VehicleModel.updateMany({ _id: vehicleId }, {"vehicle_available": false,}, { new: true }).exec();
+        return await VehicleModel.updateMany({ _id: vehicleId }, update, { new: true }).exec();
     } catch (e) {
         throw new Error(e.message)
     }

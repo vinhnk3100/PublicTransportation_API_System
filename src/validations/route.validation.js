@@ -68,7 +68,7 @@ exports.filterInvalidVehicle = async (req, res, next) => {
             })
         }
 
-        await VehicleService.updateFilterVehicle(vehicleId);
+        await VehicleService.updateFilterVehicle(vehicleId, {"vehicle_available": false,});
 
         next();
     } catch (e) {

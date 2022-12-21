@@ -1,6 +1,6 @@
 // Route Controller: Get - Create - Update - Delete
-const { RouteService, TicketService } = require('../services/index');
-const updateValidTicketRoute = require('../utils/updateValidTicketRoute.utils');
+const { RouteService, TicketService, VehicleService } = require('../services/index');
+const filterTicketIdSameRouteId = require('../utils/filterTicketIdSameRouteId.utils');
 
 // Get route
 exports.get = async (req, res, next) => {
@@ -80,15 +80,6 @@ exports.delete = async (req, res, next) => {
         // Query Database Services
         const routes = await RouteService.getRouteById(routeId);
 
-        const tickets = await TicketService.getTicket();
-
-        const ticketRouteId = await updateValidTicketRoute(routes, tickets)
-
-        console.log("Ticket and Route ID: ",ticketRouteId)
-
-        // If route is deleted, ticket will false
-        // const updateTicketValid = await TicketService.updateTicket( { is_valid: false });
-        
         if (!routes || routes.length < 1) {
             return res.json({
                 success: true,
@@ -96,22 +87,24 @@ exports.delete = async (req, res, next) => {
             });
         };
 
-        // routes.forEach(async (x) => {
-        //     await VehicleModel.updateMany(
-        //         { _id: x.vehicles }, 
-        //         {"vehicle_available": true,},
-        //         { new: true })
-        //     .exec();
-        // });
+        const tickets = await TicketService.getTicket();
 
-        // // Query Database Services
-        // await RouteService.deleteRoute(routeId);
+        const listTicketId = await filterTicketIdSameRouteId(routes, tickets)
 
-        // return res.json({
-        //     success: true,
-        //     message: `Route ${routeId} deleted!`,
-        //     route_delete: routes
-        // });
+        await TicketService.updateTicketIdWithDeletedRoute(listTicketId)
+
+        routes.forEach(async (x) => {
+            await VehicleService.updateFilterVehicle(x.vehicles, {"vehicle_available": true,});
+        });
+
+        // Query Database Services
+        await RouteService.deleteRoute(routeId);
+
+        return res.json({
+            success: true,
+            message: `Route ${routeId} deleted!`,
+            route_delete: routes
+        });
         
     } catch (e) {
         console.log("ERR: Register Error: ", e);
