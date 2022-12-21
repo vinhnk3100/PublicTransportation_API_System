@@ -17,7 +17,7 @@ const TicketSchema = new Schema({
     ticket_vehicle: {
         required: true,
         type: Schema.Types.ObjectId,
-        ref: "Routes",
+        ref: "Vehicles",
     },
     ticket_price: {
         required: true,

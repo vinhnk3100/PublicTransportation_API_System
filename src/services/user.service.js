@@ -82,6 +82,8 @@ const userBuyTicket = async (route, currentUserId, userWallet) => {
             };
         })
 
+        console.log(_route[0].vehicle.toHexString())
+
         if (userWallet < _route[0].price) {
             return {
                 message: 'Transaction Failed!'

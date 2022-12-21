@@ -6,7 +6,7 @@ const getTicket = async () => {
         return await TicketModel.find({})
             .populate("customer_name", "fullname")
             .populate("route_name", "route_name")
-            .populate("ticket_vehicle", "vehicles")
+            .populate("ticket_vehicle", "vehicle_type")
             .populate('ticket_price', "route_price").lean().exec();
     } catch (e) {
         throw new Error(e.message)
