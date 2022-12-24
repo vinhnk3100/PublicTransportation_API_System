@@ -11,7 +11,7 @@ Router.get("/:routeId", roleValidation.admin, routeController.getById);
 
 // Create route
 Router.post('/create',
-    roleValidation.admin, 
+    roleValidation.admin,
     routeValidation.createRouteValidation,
     routeValidation.filterInvalidVehicle,
     routeController.create

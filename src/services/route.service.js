@@ -1,5 +1,4 @@
 const RouteModel = require('../models/Route.model')
-const VehicleModel = require("../models/Vehicle.model");
 
 const getRoute = async () => {
     try {

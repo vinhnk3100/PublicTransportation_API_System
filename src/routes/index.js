@@ -1,9 +1,6 @@
 // Import Routers
 const apiRouter = require("./api.routes")
 
-// Import Model
-const User = require('../models/User.model');
-
 const routes = app => {
     // =============== Auth Section ===============
     app.use('/api', apiRouter)

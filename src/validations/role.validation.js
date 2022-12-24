@@ -1,4 +1,3 @@
-const User = require("../models/User.model")
 const Role = require("../helpers/roles")
 
 exports.admin = async (req, res, next) => {

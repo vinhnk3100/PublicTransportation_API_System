@@ -1,25 +1,26 @@
 // AuthController - Register & Login actions
 
 const bcrypt = require('bcrypt');
-const { UserService } = require("../services/index")
-const { generateToken } = require('../utils/jsonTokenGenerator.utils');
+const { AuthService, UserService } = require("../services/index")
 const session = require('express-session');
 
 exports.login = async (req, res, next) => {
     const { username, password } = req.body;
+
     try {
         const user = await UserService.getAuthLoginUser(username);
 
         if (user) {
+            req.session.role = user.role;
+            req.session.userId = user._id;
+            
             const hashedPassword = user.password;
             if (bcrypt.compareSync(password, hashedPassword)) {
-                req.session.role = user.role;
-                req.session.userId = user._id;
                 return res
-                    .cookie('access_token', generateToken({ id: user['_id'].toString()}), {httpOnly: true})
                     .json({
                         success: true,
                         message: "AuthController: Login successfully!",
+                        ...AuthService.getToken(user),
                         user: user
                     })
             }

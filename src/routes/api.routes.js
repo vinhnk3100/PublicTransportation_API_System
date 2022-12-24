@@ -1,5 +1,6 @@
 const Router = require('express').Router();
 const authRouter = require('./auth.routes');
+const { verifyValidAccessToken, verifyValidRefreshToken } = require('../middlewares/auth.middleware');
 const userRouter = require('./user.routes');
 const vehicleRouter = require('./vehicle.routes');
 const managementUnitRouter = require("./managementUnit.routes");
@@ -8,6 +9,12 @@ const ticketRoute = require("./ticket.routes")
 
 // api/auth - Login & Registation
 Router.use('/auth', authRouter);
+
+// Check expired refresh Token => new Access token
+Router.use(verifyValidRefreshToken)
+
+// Verify User Access Token
+Router.use(verifyValidAccessToken);
 
 // api/user - User
 Router.use('/user', userRouter);
