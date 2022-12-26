@@ -3,7 +3,7 @@ const roleValidation = require("../validations/role.validation");
 const vehicleController = require("../controllers/vehicle.controller");
 
 // Get all vehicles
-Router.get('/', roleValidation.staff, vehicleController.get);
+Router.get('/', roleValidation.admin, vehicleController.get);
 
 // Searching - Vehicle available (Not routing)
 Router.get("/search", vehicleController.getAvailable);

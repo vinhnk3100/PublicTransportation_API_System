@@ -1,5 +1,4 @@
-const { default: mongoose } = require('mongoose');
-const { tokenExpired, generateToken, generateRefreshToken, verifyRefreshToken } = require('../utils/jsonTokenGenerator.utils');
+const { tokenExpired, generateToken, generateRefreshToken } = require('../utils/jsonTokenGenerator.utils');
 
 const getToken = (user) => {
     const userPayloadToken = {
@@ -20,18 +19,6 @@ const getToken = (user) => {
     }
 }
 
-const requestAccessToken = (refreshToken) => {
-    try {
-        const { id } = verifyRefreshToken(refreshToken);
-        if (id && mongoose.isValidObjectId(id)) {
-            console.log(id)
-        }
-    } catch (e) {
-        console.log(e.message)
-    }
-}
-
 module.exports = {
-    getToken,
-    requestAccessToken
+    getToken
 }

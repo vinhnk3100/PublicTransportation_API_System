@@ -21,7 +21,7 @@ exports.verifyValidRefreshToken = async (req, res, next) => {
     } catch (e) {
         return res.status(401).json({
             success: false,
-            message: "Refresh token expired. Please login again!" + e.message
+            message: `${'invalid signature' ? 'Invalid Token' : 'Refresh token expired. Please login again'}`
         })
     }
 }
@@ -42,12 +42,12 @@ exports.verifyValidAccessToken = async (req, res, next) => {
 
         return res.status(401).json({
             success: false,
-            message: 'UNAUTHORIZED'
+            message: 'Unauthorized'
         });
     } catch (e) {
         return res.status(401).json({
             success: false,
-            message: 'Time Session expired'
+            message: e.message === 'jwt expired' ? 'Time Session expired' : 'Invalid Token'
         });
     }
 }

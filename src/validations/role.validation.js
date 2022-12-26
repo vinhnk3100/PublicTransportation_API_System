@@ -1,24 +1,17 @@
 const Role = require("../helpers/roles")
+const { verifyToken } = require('../utils/jsonTokenGenerator.utils');
 
 exports.admin = async (req, res, next) => {
-    if (req.session.role !== Role.ADMIN) {
+    const { access_token } = req.headers;
+    const { role } = verifyToken(access_token)
+
+    if (role !== Role.ADMIN) {
         return res.json({
             success: true,
-            message: "Access denied!"
+            message: "Access denied admin!"
         });
     }
     next();
-}
-
-exports.staff = async (req, res, next) => {
-    if (req.session.role === Role.STAFF || req.session.role === Role.ADMIN) {
-        next();
-        return;
-    }
-    return res.json({
-        success: true,
-        message: "Access denied!"
-    });
 }
 
 module.exports = this

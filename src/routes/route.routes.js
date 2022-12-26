@@ -4,7 +4,7 @@ const routeValidation = require("../validations/route.validation");
 const routeController = require("../controllers/route.controller");
 
 // Get route
-Router.get('/', roleValidation.staff, routeController.get);
+Router.get('/', roleValidation.admin, routeController.get);
 
 // Get Route by Id
 Router.get("/:routeId", roleValidation.admin, routeController.getById);

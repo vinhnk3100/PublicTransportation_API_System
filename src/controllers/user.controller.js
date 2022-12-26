@@ -2,6 +2,7 @@
 // Some functions specify only for administrator
 const ROLE = require("../helpers/roles");
 const { UserService } = require('../services/index')
+const { verifyToken } = require('../utils/jsonTokenGenerator.utils');
 
 // ========================= CRUD Sections
 
@@ -37,7 +38,7 @@ exports.getById = async (req, res, next) => {
 
         if (!user || user.length < 1) {
             return res.json({
-                success: true,
+                success: false,
                 message: "User is not existed!"
             })
         }
@@ -143,7 +144,9 @@ exports.delete = async (req, res, next) => {
 
 // Buy Ticket
 exports.buyTicket = async (req, res, next) => {
-    const currentUserId = req.session.userId;
+    const { access_token } = req.headers;
+    const { id } = verifyToken(access_token)
+    const currentUserId = id;
     const route = req.routeInvalidFiltered;
     try {
         // Check if user existed
@@ -151,7 +154,7 @@ exports.buyTicket = async (req, res, next) => {
 
         if (!user || user.length < 1) {
             return res.json({
-                success: true,
+                success: false,
                 message: "User is not existed!"
             })
         }

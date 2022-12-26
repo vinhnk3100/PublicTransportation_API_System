@@ -3,7 +3,7 @@ const roleValidation = require("../validations/role.validation");
 const ticketController = require("../controllers/ticket.controllers")
 
 // Get all ticket
-Router.get('/', roleValidation.staff, ticketController.get);
+Router.get('/', roleValidation.admin, ticketController.get);
 
 // Create ticket
 Router.post('/create', roleValidation.admin, ticketController.create);
