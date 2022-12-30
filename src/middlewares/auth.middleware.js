@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
-const UserService = require('../services/user.service')
-const { AuthService } = require("../services/index");
+const { AuthService, UserService} = require("../services/index");
 const { verifyToken, verifyRefreshToken } = require('../utils/jsonTokenGenerator.utils');
 
 exports.verifyValidRefreshToken = async (req, res, next) => {

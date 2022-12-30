@@ -1,7 +1,6 @@
 // Buy ticket - delete - update
-
-const TicketModel = require('../models/Ticket.model')
-const { TicketService } = require('../services/index')
+const { TicketService, RouteService } = require('../services/index')
+const { verifyToken } = require('../utils/jsonTokenGenerator.utils');
 
 // get
 exports.get = async (req, res, next) => {
@@ -27,12 +26,44 @@ exports.get = async (req, res, next) => {
     }
 }
 
+// get by id
+exports.getById = async (req, res, next) => {
+    const { ticketId } = req.params;
+    try {
+        const ticket = await TicketService.getTicketById(ticketId);
+
+        if (!ticket || ticket.length < 1) {
+            return res.json({
+                success: false,
+                message: 'Ticket not existed!'
+            })
+        }
+
+        return res.json({
+            success: true,
+            message: 'Ticket found!',
+            data: ticket
+        })
+    } catch (e) {
+        console.log("TicketController: Get Ticket ID Error: ", e);
+        next(e);
+    }
+}
+
 // create
 exports.create = async (req, res, next) => {
-    const { customer_name, route_name, ticket_vehicle, ticket_price, is_valid } = req.body
+    const { route_id } = req.body
+    const { access_token } = req.headers;
     try {
-        const ticket = await TicketService.createTicket(customer_name, route_name, ticket_vehicle, ticket_price, is_valid);
-        
+        const { fullname } = verifyToken(access_token);
+        const route = await RouteService.getRouteById(route_id);
+        if (!route || route.length < 1) {
+            return res.json({
+                success: false,
+                message: "Route not existed!"
+            })
+        }
+        const ticket = await TicketService.createTicket(fullname, route_id);
         return res.json({
             success: true,
             message: "Ticket create!",
@@ -59,5 +90,23 @@ exports.delete = async (req, res, next) => {
     } catch (e) {
         console.log("TicketController: Delete Ticket Error: ", e);
         next(e);
+    }
+}
+
+// ========================================= Utilities ===============================================
+// Check valid ticket - For scanning purpose on bus
+exports.isvalid = async (req, res, next) => {
+    const { ticketId } = req.params
+    try {
+        const ticket = await TicketService.getTicketById(ticketId);
+
+        if (!ticket || ticket.length < 1) {
+            return res.json({
+                success: true,
+                message: 'Invalid ticket'
+            })
+        }
+    } catch (error) {
+        
     }
 }

@@ -1,7 +1,4 @@
 // Vehicle Controller: Get - Create - Update - Delete
-
-const VEHICLE_TYPE = require("../helpers/vehicleTypes")
-const VehicleModel = require("../models/Vehicle.model");
 const { VehicleService } = require('../services/index')
 
 // get

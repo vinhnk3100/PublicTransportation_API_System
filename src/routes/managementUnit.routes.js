@@ -3,10 +3,10 @@ const roleValidation = require("../validations/role.validation");
 const managementUnitController = require("../controllers/managementUnit.controller");
 
 // Get all Management Units
-Router.get('/', roleValidation.admin, managementUnitController.get);
+Router.get('/', managementUnitController.get);
 
 // Get management unit by id
-Router.get('/:mgtUnitId', roleValidation.admin, managementUnitController.getById);
+Router.get('/:mgtUnitId', managementUnitController.getById);
 
 // Create management unit
 Router.post('/create', roleValidation.admin, managementUnitController.create);

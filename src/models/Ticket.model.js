@@ -6,18 +6,13 @@ const Schema = mongoose.Schema;
 const TicketSchema = new Schema({
     customer_name: {
         required: true,
-        type: Schema.Types.ObjectId,
+        type: String,
         ref: 'Users',
     },
     route_name: {
         required: true,
         type: Schema.Types.ObjectId,
         ref: 'Routes',
-    },
-    ticket_vehicle: {
-        required: true,
-        type: Schema.Types.ObjectId,
-        ref: "Vehicles",
     },
     ticket_price: {
         required: true,

@@ -1,8 +1,9 @@
 // UserController - Get, Create, Update, Delete
 // Some functions specify only for administrator
 const ROLE = require("../helpers/roles");
-const { UserService } = require('../services/index')
+const { UserService, RouteService, TicketService } = require('../services/index')
 const { verifyToken } = require('../utils/jsonTokenGenerator.utils');
+const { isWalletInsufficient } = require("../utils/checkWalletTransaction.ultis")
 
 // ========================= CRUD Sections
 
@@ -145,13 +146,16 @@ exports.delete = async (req, res, next) => {
 // Buy Ticket
 exports.buyTicket = async (req, res, next) => {
     const { access_token } = req.headers;
-    const { id } = verifyToken(access_token)
+    const { id, fullname } = verifyToken(access_token)
     const currentUserId = id;
-    const route = req.routeInvalidFiltered;
-    try {
-        // Check if user existed
-        const user = await UserService.getUserById(currentUserId);
+    const routeId = req.routeInvalidFiltered;
+    let userWallet = 0;
 
+    try {
+        const user = await UserService.getUserById(currentUserId);
+        const route = await RouteService.getRouteById(routeId)
+        
+        // Check if user existed
         if (!user || user.length < 1) {
             return res.json({
                 success: false,
@@ -159,20 +163,37 @@ exports.buyTicket = async (req, res, next) => {
             })
         }
 
-        // Check user wallet is available for buying ticket
+        // Check user wallet is available for buying ticket / Return true => continue to buy ticket
+        const isSufficient = await isWalletInsufficient(route, user[0].wallet);
 
-        const getUserWallet = user.map(u => {
-            return {
-                wallet: u.wallet
-            }
-        });
-        const userWallet = getUserWallet[0].wallet;
+        if (!isSufficient) {
+            return res.json({
+                success: true,
+                message: 'Transaction Failed!'
+            })
+        }
 
-        const userBuyTicket = await UserService.userBuyTicket(route, currentUserId, userWallet);
+        // If user have enough money in wallet - Update there money wallet ======== then return true
+        userWallet = user[0].wallet - route.route_price
+
+        // Buy Ticket => Create new ticket for the user (Require: user fullname & the route ID)
+        const createTicket = await TicketService.createTicket(fullname, routeId)
+
+        // Update history purchase in user
+        await UserService.updateUser(id, {
+            wallet: userWallet,
+            $push: { history_purchase: {
+                message: `Purchase ticket successfully!`,
+                data_purchase: {
+                    ticket_id: createTicket._id.toHexString()
+                }
+            }}
+        })
 
         return res.json({
             success: true,
-            data: userBuyTicket
+            message: 'Ticket bought successfully!',
+            data: createTicket
         })
 
     } catch (e) {

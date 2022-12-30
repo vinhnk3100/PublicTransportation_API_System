@@ -2,6 +2,7 @@ const { check } = require('express-validator');
 const { handleValidationResult } = require('../utils/handleValidationResult.util');
 const removeUnvalidObjectId = require("../utils/removeUnvalidObjectId.utils");
 const { RouteService, VehicleService } = require('../services');
+const mongoose = require('mongoose')
 
 exports.createRouteValidation = [
     check("route_name")
@@ -47,11 +48,11 @@ exports.filterInvalidVehicle = async (req, res, next) => {
 
         const vehicleExist = await VehicleService.getVehicleById(vehicleId);
 
+        // ===== Check if Vehicle is available for the next Tour
         const vehicleFilter = vehicleExist.filter(vehicle => { 
             return vehicle.vehicle_available === false;
         });
 
-        // ===== Check if Vehicle is available for the next Tour
         if (!vehicleFilter || vehicleFilter.length > 0) {
             return res.json({
                 success: true,
@@ -79,9 +80,14 @@ exports.filterInvalidVehicle = async (req, res, next) => {
 exports.filterUrlInvalidRouteId = async (req, res, next) => {
     const routeId = req.query.routeId
     try {
-        const _routeId = removeUnvalidObjectId.singleItem(routeId)
+        if (!routeId || !mongoose.isValidObjectId(routeId)) {
+            return res.json({
+                success: true,
+                message: "Invalid Route Id!"
+            })
+        }
 
-        const route = await RouteService.getRouteById(_routeId);
+        const route = await RouteService.getRouteById(routeId);
 
         if (!route || route.length < 1) {
             return res.json({
@@ -89,7 +95,8 @@ exports.filterUrlInvalidRouteId = async (req, res, next) => {
                 message: "No route found!"
             })
         }
-        req.routeInvalidFiltered = route;
+        
+        req.routeInvalidFiltered = routeId;
 
         next();
     } catch (e) {

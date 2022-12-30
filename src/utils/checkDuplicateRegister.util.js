@@ -27,5 +27,3 @@ exports.register = async (req, res, next) => {
     }
     next()
 }
-
-module.exports = this

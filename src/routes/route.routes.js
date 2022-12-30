@@ -4,10 +4,10 @@ const routeValidation = require("../validations/route.validation");
 const routeController = require("../controllers/route.controller");
 
 // Get route
-Router.get('/', roleValidation.admin, routeController.get);
+Router.get('/', routeController.get);
 
 // Get Route by Id
-Router.get("/:routeId", roleValidation.admin, routeController.getById);
+Router.get("/:routeId", routeController.getById);
 
 // Create route
 Router.post('/create',

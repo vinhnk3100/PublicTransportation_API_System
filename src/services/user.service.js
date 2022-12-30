@@ -1,6 +1,4 @@
 const UserModel = require('../models/User.model');
-const TicketModel = require('../models/Ticket.model');
-const TicketService = require('../services/ticket.service')
 const bcrypt = require('bcrypt');
 
 // get
@@ -70,58 +68,11 @@ const deleteUser = async (userId) => {
 
 // ========================================== Utilities Sections ==========================================
 
-// Buy ticket
-const userBuyTicket = async (route, currentUserId, userWallet) => {
-    try {
-        const _route = route.map(item => {
-            return {
-                name: item.route_name,
-                id: item._id,
-                vehicle: item.vehicles[0]._id,
-                price: item.route_price
-            };
-        })
-
-        console.log(_route[0].vehicle.toHexString())
-
-        if (userWallet < _route[0].price) {
-            return {
-                message: 'Transaction Failed!'
-            };
-        }
-
-        await UserModel.findByIdAndUpdate({ _id: currentUserId }, { 
-            wallet: userWallet - _route[0].price,
-            $push: {history_purchase: {
-                message: `Purchase Ticket to ${_route[0].name}`,
-                data_purchase: {
-                    ticket_id: _route[0].id
-                }
-            }}
-        }, {
-            new: true
-        })
-
-        return {
-            message: 'Transaction completed!',
-            ticket: await TicketService.createTicket(currentUserId,
-                _route[0].id.toHexString(),
-                _route[0].vehicle.toHexString(),
-                _route[0].id.toHexString(),
-                true)
-        }
-
-    } catch (e) {
-        throw new Error(e.message)
-    }
-}
-
 module.exports = {
     getUser,
     getUserById,
     createUser,
     updateUser,
     deleteUser,
-    getAuthLoginUser,
-    userBuyTicket
+    getAuthLoginUser
 }

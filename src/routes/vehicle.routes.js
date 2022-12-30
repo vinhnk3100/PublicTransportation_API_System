@@ -3,13 +3,13 @@ const roleValidation = require("../validations/role.validation");
 const vehicleController = require("../controllers/vehicle.controller");
 
 // Get all vehicles
-Router.get('/', roleValidation.admin, vehicleController.get);
+Router.get('/', vehicleController.get);
 
 // Searching - Vehicle available (Not routing)
 Router.get("/search", vehicleController.getAvailable);
 
 // Get vehicle by id
-Router.get("/:vehicleId", roleValidation.admin, vehicleController.getById);
+Router.get("/:vehicleId", vehicleController.getById);
 
 // Create Vehicle
 Router.post("/create", roleValidation.admin, vehicleController.create);

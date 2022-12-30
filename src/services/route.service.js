@@ -10,7 +10,7 @@ const getRoute = async () => {
 
 const getRouteById = async (routeId) => {
     try {
-        return await RouteModel.find({ _id: routeId }).populate("vehicles").lean().exec();
+        return await RouteModel.findById({ _id: routeId }).populate("vehicles").lean().exec();
     } catch (e) {
         throw new Error(e.message)
     }
