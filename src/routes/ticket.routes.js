@@ -14,7 +14,4 @@ Router.post('/create', roleValidation.admin, ticketController.create);
 // Delete ticket
 Router.delete('/:ticketId', roleValidation.admin, ticketController.delete);
 
-// Scanning purpose
-Router.get('/:ticketId', ticketController.isvalid);
-
 module.exports = Router;

@@ -94,19 +94,3 @@ exports.delete = async (req, res, next) => {
 }
 
 // ========================================= Utilities ===============================================
-// Check valid ticket - For scanning purpose on bus
-exports.isvalid = async (req, res, next) => {
-    const { ticketId } = req.params
-    try {
-        const ticket = await TicketService.getTicketById(ticketId);
-
-        if (!ticket || ticket.length < 1) {
-            return res.json({
-                success: true,
-                message: 'Invalid ticket'
-            })
-        }
-    } catch (error) {
-        
-    }
-}

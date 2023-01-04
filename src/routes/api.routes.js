@@ -10,6 +10,14 @@ const ticketRoute = require("./ticket.routes")
 // api/auth - Login & Registation
 Router.use('/auth', authRouter);
 
+// api/route - Route
+Router.use('/route', routeRouter);
+
+// api/vehicle - Vehicle
+Router.use('/vehicle', vehicleRouter);
+
+// ======================================= Route that need access & refresh token =================================================
+
 // Check expired refresh Token => new Access token
 Router.use(verifyValidRefreshToken)
 
@@ -19,14 +27,8 @@ Router.use(verifyValidAccessToken);
 // api/user - User
 Router.use('/user', userRouter);
 
-// api/vehicle - Vehicle
-Router.use('/vehicle', vehicleRouter);
-
 // api/mgtunit - Management Unit
 Router.use('/mgtunit', managementUnitRouter);
-
-// api/route - Route
-Router.use('/route', routeRouter);
 
 // api/ticket - Ticket
 Router.use('/ticket', ticketRoute)
