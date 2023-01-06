@@ -6,7 +6,7 @@ const tokenSecretKey = process.env.TOKEN_SECRET_KEY;
 const tokenExpire = process.env.TOKEN_EXPIRE;
 
 // Export token expired date
-exports.tokenExpired = () => { return tokenExpire }
+exports.tokenExpired = () => { return Date.now() + 1 * 60 * 60 * 1000 }
 
 // Generate Token
 exports.generateToken = (payload) => jwt.sign(payload, tokenSecretKey, { algorithm: 'HS256', expiresIn: tokenExpire });

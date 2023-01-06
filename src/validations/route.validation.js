@@ -8,7 +8,7 @@ exports.createRouteValidation = [
     check("route_name")
         .exists().withMessage("Route name field can not be empty!")
         .notEmpty().withMessage("Route name field can not be empty!"),
-    check("distance_length")
+    check("route_distance")
         .exists().withMessage("Distance field can not be empty!")
         .notEmpty().withMessage("Distance field can not be empty!"),
     check("time_start")
@@ -29,6 +29,18 @@ exports.createRouteValidation = [
     check("time_end.minutes")
         .exists().withMessage("Time end minutes field can not be empty!")
         .notEmpty().withMessage("Time end minutes field can not be empty!"),
+    check("route_number")
+        .exists().withMessage("Route number field can not be empty!")
+        .notEmpty().withMessage("Route number field can not be empty!"),
+    check("route_spacing")
+        .exists().withMessage("Route spacing field can not be empty!")
+        .notEmpty().withMessage("Route spacing field can not be empty!"),
+    check("total_route")
+        .exists().withMessage("Total route field can not be empty!")
+        .notEmpty().withMessage("Total route field can not be empty!"),
+    check("route_agencies")
+        .exists().withMessage("Route agencies field can not be empty!")
+        .notEmpty().withMessage("Route agencies field can not be empty!"),
     check("stations")
         .exists().withMessage("Station field can not be empty!")
         .notEmpty().withMessage("Station field can not be empty!"),

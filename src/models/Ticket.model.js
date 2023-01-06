@@ -23,6 +23,10 @@ const TicketSchema = new Schema({
         required: true,
         type: Boolean,
         default: true
+    },
+    ticket_expired: {
+        required: true,
+        type: Number
     }
 }, {timestamps: true});
 

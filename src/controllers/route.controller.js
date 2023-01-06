@@ -55,11 +55,11 @@ exports.getById = async (req, res, next) => {
 
 // Create route
 exports.create = async (req, res, next) => {
-    const { route_name, distance_length, time_start, time_end, stations, vehicles } = req.body;
+    const { route_number, route_name, route_distance, time_start, time_end, route_spacing, total_route, route_agencies, stations, vehicles } = req.body;
 
     try {
         // Query Database Services
-        const newRoute = await RouteService.createRoute(route_name, distance_length, time_start, time_end, stations, vehicles);
+        const newRoute = await RouteService.createRoute(route_number, route_name, route_distance, time_start, time_end, route_spacing, total_route, route_agencies, stations, vehicles);
 
         return res.json({
             success: true,
@@ -88,14 +88,14 @@ exports.delete = async (req, res, next) => {
         };
 
         const tickets = await TicketService.getTicket();
-
         const listTicketId = await filterTicketIdSameRouteId(routes, tickets)
 
         await TicketService.updateTicketIdWithDeletedRoute(listTicketId)
 
-        routes.forEach(async (x) => {
-            await VehicleService.updateFilterVehicle(x.vehicles, {"vehicle_available": true,});
-        });
+        await VehicleService.updateFilterVehicle(
+            routes.vehicles.map(route => {return route._id.toHexString()}),
+            {"vehicle_available": true,}
+        );
 
         // Query Database Services
         await RouteService.deleteRoute(routeId);

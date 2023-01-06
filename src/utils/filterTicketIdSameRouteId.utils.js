@@ -16,8 +16,8 @@ const filterListOfTicketId = (tickets, routeId) => {
 
 const filterTicketIdSameRouteId = async (routes, tickets) => {
     // Route
-    const filterRouteId = routes.map(route => {
-        return route._id.toHexString();
+    const filterRouteId = Object.entries(routes).map(() => {
+        return routes._id.toHexString();
     })
 
     const routeId = filterRouteId[0]

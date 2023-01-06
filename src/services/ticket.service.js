@@ -26,7 +26,8 @@ const createTicket = async (fullname, route_id) => {
             customer_name: fullname,
             route_name: route_id,
             ticket_price: route_id,
-            is_valid: true
+            is_valid: true,
+            ticket_expired: Date.now()
         })
     } catch (e) {
         throw new Error(e.message)
