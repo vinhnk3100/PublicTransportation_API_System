@@ -1,24 +1,39 @@
 const mongoose = require('mongoose');
 const { route } = require('../routes/auth.routes');
 const cronJob = require('cron').CronJob;
-const { RouteService, TicketService } = require("../services/index");
+const { RouteService, TicketService, VehicleService } = require("../services/index");
+
+/**
+ * If Route deleted
+ *  ticket is_valid = false
+ *  vehicle_available = true
+ */
 
 exports.removeTimeOutRouteAndTicket = async (req, res, next) => {
     const expiredRouteHour = 20
     // If 8:00 PM - Delete all Route
-    let job = new cronJob(`* * ${expiredRouteHour} * * *`,
-        async function() {
-            const routeDelete = await RouteService.deleteManyRoute()
-            return res.json({
-                success: true,
-                message: "All route reset!",
-                route_deleted: routeDelete
-            })
-        },
-        next(),
-        true,
-        'Asia/Ho_Chi_Minh'
-    )
+    const routes = await RouteService.getRoute()
+    next()
+    // routes?.map(route => {
+    //     console.log(route.time_end.hours)
+    //     let job = new cronJob(`${route.time_end.hours} * * * * *`,
+    //         async function() {
+    //             console.log(route.time_end.hours)
+    //             // const routeDelete = await RouteService.deleteManyRoute()
+    //             // await TicketService.updateManyTicket({ is_valid: false });
+    //             // await VehicleService.updateManyVehicle({ vehicle_available: true })
 
-    job.start()
+    //             // return res.json({
+    //             //     success: true,
+    //             //     message: "All route reset!",
+    //             //     route_deleted: routeDelete
+    //             // })
+    //         },
+    //         next(),
+    //         true,
+    //         'Asia/Ho_Chi_Minh'
+    //     )
+
+    //     job.start()
+    // })
 }

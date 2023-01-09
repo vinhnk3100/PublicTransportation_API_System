@@ -16,19 +16,31 @@ exports.createRouteValidation = [
         .notEmpty().withMessage("Time start field can not be empty!"),
     check("time_start.hours")
         .exists().withMessage("Time start hours field can not be empty!")
-        .notEmpty().withMessage("Time start hours field can not be empty!"),
+        .notEmpty().withMessage("Time start hours field can not be empty!")
+        .custom((value) => {
+            if (value < 6 || value > 12) throw new Error('Time start hours route can only from 6AM to 12PM!')
+        }),
     check("time_start.minutes")
         .exists().withMessage("Time start minutes field can not be empty!")
-        .notEmpty().withMessage("Time start minutes field can not be empty!"),
+        .notEmpty().withMessage("Time start minutes field can not be empty!")
+        .custom((value) => {
+            if (value < 0 || value > 59) throw new Error('Minutes can only from 0 to 59!')
+        }),
     check("time_end")
         .exists().withMessage("Time end field can not be empty!")
         .notEmpty().withMessage("Time end field can not be empty!"),
     check("time_end.hours")
         .exists().withMessage("Time end hours field can not be empty!")
-        .notEmpty().withMessage("Time end hours field can not be empty!"),
+        .notEmpty().withMessage("Time end hours field can not be empty!")
+        .custom((value) => {
+            if (value < 12 || value > 21) throw new Error('Time end hours route is from 12PM to 21PM!')
+        }),
     check("time_end.minutes")
         .exists().withMessage("Time end minutes field can not be empty!")
-        .notEmpty().withMessage("Time end minutes field can not be empty!"),
+        .notEmpty().withMessage("Time end minutes field can not be empty!")
+        .custom((value) => {
+            if (value < 0 || value > 59) throw new Error('Minutes can only from 0 to 59!')
+        }),
     check("route_number")
         .exists().withMessage("Route number field can not be empty!")
         .notEmpty().withMessage("Route number field can not be empty!"),

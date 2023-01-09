@@ -72,12 +72,18 @@ exports.create = async (req, res, next) => {
     }
 }
 
-// delete route
+/**
+ * ========================= DELETE ROUTE =========================
+ * 1. Queries routeId in Params and get route data
+ * 2. Filtering the ticket with the same route
+ * 3. Update vehicle available when route ready to be deleted
+ * 4. Deleted Route
+ */
 exports.delete = async (req, res, next) => {
     const { routeId } = req.params;
 
     try {
-        // Query Database Services
+        // 1.
         const routes = await RouteService.getRouteById(routeId);
         const tickets = await TicketService.getTicket();
 
@@ -88,16 +94,17 @@ exports.delete = async (req, res, next) => {
             });
         };
         
+        // 2.
         const listTicketId = await filterTicketIdSameRouteId(routes, tickets)
-
         await TicketService.updateTicketIdWithDeletedRoute(listTicketId)
 
+        // 3.
         await VehicleService.updateFilterVehicle(
             routes.vehicles.map(route => {return route._id.toHexString()}),
             {"vehicle_available": true,}
         );
 
-        // Query Database Services
+        // 4.
         await RouteService.deleteRoute(routeId);
 
         return res.json({
@@ -110,9 +117,4 @@ exports.delete = async (req, res, next) => {
         console.log("ERR: Register Error: ", e);
         next(e);
     }
-}
-
-// delete all route
-exports.deleteAll = async (req, res, next) => {
-
 }

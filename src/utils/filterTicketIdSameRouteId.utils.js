@@ -5,8 +5,9 @@
  */
 const filterListOfTicketId = (tickets, routeId) => {
     let ticketid = [];
-    tickets.forEach(ticket => {
-        if (ticket.route_name._id.toHexString() === routeId) {
+    
+    tickets?.forEach(ticket => {
+        if (ticket.route_name?._id.toHexString() === routeId) {
             return ticketid.push(ticket._id.toHexString());
         }
     })

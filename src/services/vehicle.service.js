@@ -57,6 +57,14 @@ const updateFilterVehicle = async (vehicleId, update) => {
     }
 }
 
+const updateManyVehicle = async (update) => {
+    try {
+        return await VehicleModel.updateMany(update)
+    } catch (e) {
+        throw new Error(e.message)
+    }
+}
+
 const deleteVehicle = async (vehicleId) => {
     try {
         return await VehicleModel.findByIdAndDelete({ _id: vehicleId });
@@ -71,6 +79,7 @@ module.exports = {
     getAvailable,
     createVehicle,
     updateVehicle,
+    updateManyVehicle,
     updateFilterVehicle,
     deleteVehicle
 }

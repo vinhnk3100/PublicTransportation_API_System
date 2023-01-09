@@ -34,7 +34,7 @@ const createTicket = async (fullname, route_id) => {
     }
 }
 
-const updateTicket = async(ticketId, update) => {
+const updateTicket = async (ticketId, update) => {
     try {
         return await TicketModel.findByIdAndUpdate({ _id: ticketId }, update, {
             new: true
@@ -44,11 +44,9 @@ const updateTicket = async(ticketId, update) => {
     }
 }
 
-const deleteTicket = async (ticketId) => {
+const updateManyTicket = async (update) => {
     try {
-        return await TicketModel.findByIdAndDelete({ _id: ticketId })
-            .populate("route_name", "route_name")
-            .populate('ticket_price', "route_price").lean().exec();
+        return await TicketModel.updateMany(update)
     } catch (e) {
         throw new Error(e.message)
     }
@@ -65,11 +63,22 @@ const updateTicketIdWithDeletedRoute = async (listOfTicketId) => {
     }
 }
 
+const deleteTicket = async (ticketId) => {
+    try {
+        return await TicketModel.findByIdAndDelete({ _id: ticketId })
+            .populate("route_name", "route_name")
+            .populate('ticket_price', "route_price").lean().exec();
+    } catch (e) {
+        throw new Error(e.message)
+    }
+}
+
 module.exports = {
     getTicket,
     getTicketById,
     createTicket,
     updateTicket,
+    updateManyTicket,
     updateTicketIdWithDeletedRoute,
     deleteTicket
 }

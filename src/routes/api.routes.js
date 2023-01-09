@@ -8,10 +8,11 @@ const managementUnitRouter = require("./managementUnit.routes");
 const routeRouter = require("./route.routes")
 const ticketRoute = require("./ticket.routes")
 
-Router.use(removeTimeOutRouteAndTicket)
-
 // api/auth - Login & Registation
 Router.use('/auth', authRouter);
+
+// Automatically call function to update Route
+Router.use(removeTimeOutRouteAndTicket)
 
 // api/route - Route
 Router.use('/route', routeRouter);
