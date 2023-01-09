@@ -79,6 +79,7 @@ exports.delete = async (req, res, next) => {
     try {
         // Query Database Services
         const routes = await RouteService.getRouteById(routeId);
+        const tickets = await TicketService.getTicket();
 
         if (!routes || routes.length < 1) {
             return res.json({
@@ -86,8 +87,7 @@ exports.delete = async (req, res, next) => {
                 message: "Route not existed!"
             });
         };
-
-        const tickets = await TicketService.getTicket();
+        
         const listTicketId = await filterTicketIdSameRouteId(routes, tickets)
 
         await TicketService.updateTicketIdWithDeletedRoute(listTicketId)
@@ -110,4 +110,9 @@ exports.delete = async (req, res, next) => {
         console.log("ERR: Register Error: ", e);
         next(e);
     }
+}
+
+// delete all route
+exports.deleteAll = async (req, res, next) => {
+
 }

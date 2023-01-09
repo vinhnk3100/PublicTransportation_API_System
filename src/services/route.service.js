@@ -16,6 +16,15 @@ const getRouteById = async (routeId) => {
     }
 }
 
+const getRouteSpecificTime = async (hours, minutes) => {
+    try {
+        console.log("Hours in service: ", hours)
+        return await RouteModel.find({  time_end: { hours: hours, minutes: minutes } }).populate("route_agencies", "mgtunit_name").lean().exec();
+    } catch (e) {
+        throw new Error(e.message)
+    }
+}
+
 const createRoute = async (route_number, route_name, route_distance, time_start, time_end, route_spacing, total_route, route_agencies, stations, vehicles) => {
     try {
         return await RouteModel.create({
@@ -32,7 +41,7 @@ const createRoute = async (route_number, route_name, route_distance, time_start,
             vehicles: vehicles
         })
     } catch (e) {
-        throw new Error(e.message)
+        throw new Error(e.message);
     }
 }
 
@@ -40,10 +49,25 @@ const deleteRoute = async (routeId) => {
     try {
         return await RouteModel.findByIdAndDelete({ _id: routeId }).lean().exec();
     } catch (e) {
-        throw new Error(e.message)
+        throw new Error(e.message);
+    }
+}
+
+
+// Test
+const deleteManyRoute = async () => {
+    try {
+        return await RouteModel.deleteMany().lean().exec();
+    } catch (e) {
+        throw new Error(e.message);
     }
 }
 
 module.exports = {
-    getRoute, getRouteById, createRoute, deleteRoute
+    getRoute,
+    getRouteById,
+    getRouteSpecificTime,
+    createRoute,
+    deleteRoute,
+    deleteManyRoute
 }

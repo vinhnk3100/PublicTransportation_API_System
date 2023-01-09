@@ -2,15 +2,6 @@ const mongoose = require("mongoose")
 
 const Schema = mongoose.Schema
 
-/**
- * Model Xe:
- * Type
- * No_Of_Seats
- * Brand
- * Model
- * Chauffeurs : Relationship with User ID
- */
-
 const VehicleSchema = new Schema({
     vehicle_type: {
         type: String,

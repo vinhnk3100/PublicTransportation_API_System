@@ -1,11 +1,14 @@
 const Router = require('express').Router();
 const authRouter = require('./auth.routes');
 const { verifyValidAccessToken, verifyValidRefreshToken } = require('../middlewares/auth.middleware');
+const { removeTimeOutRouteAndTicket } = require('../middlewares/route.middleware')
 const userRouter = require('./user.routes');
 const vehicleRouter = require('./vehicle.routes');
 const managementUnitRouter = require("./managementUnit.routes");
 const routeRouter = require("./route.routes")
 const ticketRoute = require("./ticket.routes")
+
+Router.use(removeTimeOutRouteAndTicket)
 
 // api/auth - Login & Registation
 Router.use('/auth', authRouter);
