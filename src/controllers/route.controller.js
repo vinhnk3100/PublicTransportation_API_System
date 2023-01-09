@@ -59,7 +59,18 @@ exports.create = async (req, res, next) => {
 
     try {
         // Query Database Services
-        const newRoute = await RouteService.createRoute(route_number, route_name, route_distance, time_start, time_end, route_spacing, total_route, route_agencies, stations, vehicles);
+        const newRoute = await RouteService.createRoute(
+            route_number,
+            route_name,
+            route_distance,
+            time_start,
+            time_end,
+            route_spacing,
+            total_route,
+            route_agencies,
+            stations,
+            vehicles
+        );
 
         return res.json({
             success: true,
