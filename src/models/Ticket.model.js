@@ -24,6 +24,14 @@ const TicketSchema = new Schema({
         type: Boolean,
         default: true
     },
+    ticket_type: {
+        required: true,
+        type: Number
+    },
+    tap_count: {
+        required: true,
+        type: Number
+    },
     ticket_expired: {
         required: true,
         type: Number

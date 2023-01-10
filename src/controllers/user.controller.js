@@ -4,6 +4,7 @@ const ROLE = require("../helpers/roles");
 const { UserService, RouteService, TicketService } = require('../services/index')
 const { verifyToken } = require('../utils/jsonTokenGenerator.utils');
 const { isWalletInsufficient } = require("../utils/checkWalletTransaction.ultis")
+const QRCode = require('qrcode')
 
 // ========================= CRUD Sections
 
@@ -149,6 +150,7 @@ exports.buyTicket = async (req, res, next) => {
     const { id, fullname } = verifyToken(access_token)
     const currentUserId = id;
     const routeId = req.routeInvalidFiltered;
+    const ticketType = req.ticketType
     let userWallet = 0;
 
     try {
@@ -177,7 +179,7 @@ exports.buyTicket = async (req, res, next) => {
         userWallet = user[0].wallet - route.route_price
 
         // Buy Ticket => Create new ticket for the user (Require: user fullname & the route ID)
-        const createTicket = await TicketService.createTicket(fullname, routeId)
+        const createTicket = await TicketService.createTicket(fullname, routeId, ticketType)
 
         // Update history purchase in user
         await UserService.updateUser(id, {
@@ -193,7 +195,8 @@ exports.buyTicket = async (req, res, next) => {
         return res.json({
             success: true,
             message: 'Ticket bought successfully!',
-            data: createTicket
+            ticket_data: createTicket,
+            qr_code: await QRCode.toDataURL('https://publictransport-api.cyclic.app/api/ticket/'+JSON.stringify(createTicket._id))
         })
 
     } catch (e) {

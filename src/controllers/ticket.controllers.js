@@ -51,8 +51,12 @@ exports.getById = async (req, res, next) => {
 }
 
 // create
+/** 
+ * To selected the expired time of the ticket
+ * We will selecte each ticket type
+ */
 exports.create = async (req, res, next) => {
-    const { route_id } = req.body
+    const { route_id, ticket_type } = req.body
     const { access_token } = req.headers;
     try {
         const { fullname } = verifyToken(access_token);
@@ -63,7 +67,7 @@ exports.create = async (req, res, next) => {
                 message: "Route not existed!"
             })
         }
-        const ticket = await TicketService.createTicket(fullname, route_id);
+        const ticket = await TicketService.createTicket(fullname, route_id, ticket_type, expiredTime);
         return res.json({
             success: true,
             message: "Ticket create!",
