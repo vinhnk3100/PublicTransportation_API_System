@@ -196,7 +196,7 @@ exports.buyTicket = async (req, res, next) => {
             success: true,
             message: 'Ticket bought successfully!',
             ticket_data: createTicket,
-            qr_code: await QRCode.toDataURL('https://publictransport-api.cyclic.app/api/ticket/'+JSON.stringify(createTicket._id))
+            qr_code: await QRCode.toDataURL(`https://publictransport-api.cyclic.app/api/ticket/${createTicket._id}`)
         })
 
     } catch (e) {
