@@ -15,7 +15,19 @@ Router.post('/create', roleValidation.admin, ticketController.create);
 // Delete ticket
 Router.delete('/:ticketId', roleValidation.admin, ticketController.delete);
 
-// Scan ticket
-Router.post('/scan', ticketValidation.checkTicketId, ticketController.scanById)
+/**
+ * Scanning Session
+ * 1. Check ticket Id
+ * 2. Check ticket valid
+ * 3. Check ticket expired
+ * 4. Check the counting tap (check in) & type of ticket
+ */
+Router.get('/scan/:ticketId',
+    ticketValidation.checkTicketId,
+    ticketValidation.checkValidTicket,
+    ticketValidation.checkTicketExpired,
+    ticketValidation.checkTicketTypeAndTapCount,
+    ticketController.scanById
+)
 
 module.exports = Router;
