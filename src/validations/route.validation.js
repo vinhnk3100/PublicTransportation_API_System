@@ -1,10 +1,9 @@
-const { check } = require('express-validator');
-const { handleValidationResult } = require('../utils/handleValidationResult.util');
-const removeUnvalidObjectId = require("../utils/removeUnvalidObjectId.utils");
-const { RouteService, VehicleService } = require('../services');
-const mongoose = require('mongoose');
-const TICKET_TYPE = require('../helpers/ticketTypes');
-const { init } = require('../models/Vehicle.model');
+const mongoose = require('mongoose')
+const { check } = require('express-validator')
+const TICKET_TYPE = require('../helpers/ticketTypes')
+const { RouteService, VehicleService } = require('../services')
+const removeUnvalidObjectId = require("../utils/removeUnvalidObjectId.utils")
+const { handleValidationResult } = require('../utils/handleValidationResult.util')
 
 exports.createRouteValidation = [
     check("route_name")
@@ -105,7 +104,7 @@ exports.filterInvalidVehicle = async (req, res, next) => {
 
 exports.filterUrlInvalidRouteId = async (req, res, next) => {
     const routeId = req.query.routeId
-    const ticket_type = req.query.ticket_type
+    const ticket_type = req.query.ticketType
     try {
         if (!routeId || !mongoose.isValidObjectId(routeId)) {
             return res.json({

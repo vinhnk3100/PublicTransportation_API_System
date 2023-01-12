@@ -35,6 +35,9 @@ const TicketSchema = new Schema({
     ticket_expired: {
         required: true,
         type: Number
+    },
+    qr_code: {
+        type: String
     }
 }, {timestamps: true});
 

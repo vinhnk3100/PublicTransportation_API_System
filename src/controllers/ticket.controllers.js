@@ -1,4 +1,5 @@
 // Buy ticket - delete - update
+const TICKET_TYPE = require('../helpers/ticketTypes');
 const { TicketService, RouteService } = require('../services/index')
 const { verifyToken } = require('../utils/jsonTokenGenerator.utils');
 
@@ -95,4 +96,49 @@ exports.delete = async (req, res, next) => {
         console.log("TicketController: Delete Ticket Error: ", e);
         next(e);
     }
+}
+
+// Scanning Ticket
+/** 
+ * 1. Get ticket ID from query 
+ * 2. Check the expired time
+ * 3. Check the ticket type
+ * 4. Check the tapping count (check in) & tapping count + 1
+*/
+exports.scanById = async (req, res, next) => {
+    const ticketId = req.query.ticketId
+    const date = Date.now()
+    const ticket = await TicketService.getTicketById(ticketId)
+
+    const expiredDate = Math.floor((ticket.ticket_expired - date)/ 1000)
+
+    if (expiredDate <= 0) {
+        return res.json({
+            success: false,
+            message: "Ticket expired"
+        })
+    }
+
+    if (ticket.ticket_type === TICKET_TYPE.ONETIME_USE && ticket.tap_count === 1) {
+        await TicketService.updateTicket(ticketId, { is_valid: false })
+        return res.json({
+            success: false,
+            message: "Ticket is invalid"
+        })
+    }
+
+    if (ticket.ticket_type === TICKET_TYPE.MONTH_USE && ticket.tap_count === 30) {
+        await TicketService.updateTicket(ticketId, { is_valid: false })
+        return res.json({
+            success: false,
+            message: "Ticket is invalid"
+        })
+    }
+    
+    await TicketService.updateTicket(ticketId, { $inc: { tap_count: 1 }})
+
+    return res.json({
+        success: true,
+        message: "Ticket Success"
+    })
 }

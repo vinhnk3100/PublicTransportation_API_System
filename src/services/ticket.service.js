@@ -29,7 +29,7 @@ const createTicket = async (fullname, route_id, ticketType) => {
             is_valid: true,
             tap_count: 0,
             ticket_expired: parseInt(ticketType) === 1 ? Date.now() + 24 * 60 * 60 * 1000 : Date.now() + 720 * 60 * 60 * 1000,
-            ticket_type: parseInt(ticketType),
+            ticket_type: parseInt(ticketType)
         })
     } catch (e) {
         throw new Error(e.message)
