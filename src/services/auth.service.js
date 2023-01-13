@@ -7,8 +7,7 @@ const getToken = (user) => {
         fullname: user['fullname'],
         phoneNumber: user['phoneNumber'],
         role: user['role'],
-        wallet: user['wallet'],
-        historyPurchase: user['history_purchase']
+        wallet: user['wallet']
     }
     let accessToken = generateToken(userPayloadToken);
     let refreshToken = generateRefreshToken(userPayloadToken);
