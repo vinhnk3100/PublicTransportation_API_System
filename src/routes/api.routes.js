@@ -6,6 +6,10 @@ const vehicleRouter = require('./vehicle.routes');
 const managementUnitRouter = require("./managementUnit.routes");
 const routeRouter = require("./route.routes")
 const ticketRoute = require("./ticket.routes")
+const vnPayTest = require('./vnpaytest.routes')
+
+// api/vnpay - Order testing ===============================================================================================================
+Router.use('/vnpay', vnPayTest)
 
 // api/auth - Login & Registation
 Router.use('/auth', authRouter);
