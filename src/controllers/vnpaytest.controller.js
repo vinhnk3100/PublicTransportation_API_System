@@ -1,4 +1,6 @@
-const moment = require('moment')
+const moment = require('moment');
+const querystring = require('qs');
+const { vnpParamsURLSigned } = require('../utils/vnpay.utils');
 
 exports.getOrderList = async (req, res, next) => {
     try {
@@ -19,7 +21,6 @@ exports.getOrderList = async (req, res, next) => {
 
 exports.createOrder = async (req, res, next) => {
     let date = new Date();
-    console.log(date)
     let ipAddr = req.headers['x-forwarded-for'] ||
         req.connection.remoteAddress ||
         req.socket.remoteAddress ||
@@ -59,16 +60,11 @@ exports.createOrder = async (req, res, next) => {
         }
     
         vnp_Params = sortObject(vnp_Params);
-    
-        let querystring = require('qs');
-        let signData = querystring.stringify(vnp_Params, { encode: false });
-        let crypto = require("crypto");     
-        let hmac = crypto.createHmac("sha512", secretKey);
-        let signed = hmac.update(new Buffer(signData, 'utf-8')).digest("hex"); 
+
+        const signed = await vnpParamsURLSigned(vnp_Params, secretKey)
         vnp_Params['vnp_SecureHash'] = signed;
         vnpUrl += '?' + querystring.stringify(vnp_Params, { encode: false });
     
-        console.log(vnp_Params)
         return res.redirect(vnpUrl)
     } catch (e) {
         throw new Error(e.message)
@@ -85,13 +81,9 @@ exports.returnIpn = async (req, res, next) => {
 
     vnp_Params = sortObject(vnp_Params);
     let secretKey = process.env.vnp_HashSecret;
-    let querystring = require('qs');
-    let signData = querystring.stringify(vnp_Params, { encode: false });
-    let crypto = require("crypto");     
-    let hmac = crypto.createHmac("sha512", secretKey);
-    let signed = hmac.update(new Buffer(signData, 'utf-8')).digest("hex");     
-     
 
+    const signed = await vnpParamsURLSigned(vnp_Params, secretKey)
+     
     if(secureHash === signed){
         let orderId = vnp_Params['vnp_TxnRef'];
         let rspCode = vnp_Params['vnp_ResponseCode'];
@@ -123,11 +115,7 @@ exports.returnUrl = async (req, res, next) => {
 
     let secretKey = process.env.vnp_HashSecret;
 
-    let querystring = require('qs');
-    let signData = querystring.stringify(vnp_Params, { encode: false });
-    let crypto = require("crypto");     
-    let hmac = crypto.createHmac("sha512", secretKey);
-    let signed = hmac.update(new Buffer(signData, 'utf-8')).digest("hex");     
+    const signed = await vnpParamsURLSigned(vnp_Params, secretKey)
 
     if(secureHash === signed){
         //Kiem tra xem du lieu trong db co hop le hay khong va thong bao ket qua
