@@ -75,7 +75,7 @@ exports.createOrder = async (req, res, next) => {
     }
 }
 
-exports.returnOrder = async (req, res, next) => {
+exports.returnUrl = async (req, res, next) => {
     let vnp_Params = req.query;
 
     let secureHash = vnp_Params['vnp_SecureHash'];
@@ -107,6 +107,7 @@ exports.returnOrder = async (req, res, next) => {
     }
 }
 
+// địa chỉ để nhận kết quả thanh toán từ VNPAY
 exports.returnIpn = async (req, res, next) => {
     let vnp_Params = req.query;
     let secureHash = vnp_Params['vnp_SecureHash'];
