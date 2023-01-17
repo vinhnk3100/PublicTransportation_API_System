@@ -24,6 +24,9 @@ Router.use('/vehicle', vehicleRouter)
 // api/ticket - Ticket (Token validation checked)
 Router.use('/ticket', ticketRoute)
 
+// api/order - Order
+Router.use('/order', orderRouter)
+
 // ======================================= Route that need access & refresh token =================================================
 
 // Check expired refresh Token => new Access token
@@ -34,9 +37,6 @@ Router.use(verifyValidAccessToken)
 
 // api/user - User
 Router.use('/user', userRouter)
-
-// api/order - Order
-Router.use('/order', orderRouter)
 
 // api/mgtunit - Management Unit
 Router.use('/mgtunit', managementUnitRouter)
