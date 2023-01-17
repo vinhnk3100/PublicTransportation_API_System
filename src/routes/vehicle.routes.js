@@ -1,6 +1,7 @@
-const Router = require("express").Router();
-const roleValidation = require("../validations/role.validation");
-const vehicleController = require("../controllers/vehicle.controller");
+const Router = require("express").Router()
+const roleValidation = require("../validations/role.validation")
+const vehicleController = require("../controllers/vehicle.controller")
+const tokenValidation = require("../middlewares/auth.middleware")
 
 // Get all vehicles
 Router.get('/', vehicleController.get);
@@ -12,12 +13,27 @@ Router.get("/search", vehicleController.getAvailable);
 Router.get("/:vehicleId", vehicleController.getById);
 
 // Create Vehicle
-Router.post("/create", roleValidation.admin, vehicleController.create);
+Router.post("/create",
+    tokenValidation.verifyValidRefreshToken,
+    tokenValidation.verifyValidAccessToken,
+    roleValidation.admin,
+    vehicleController.create
+);
 
 // Update Vehicle
-Router.put("/:vehicleId", roleValidation.admin, vehicleController.update);
+Router.put("/:vehicleId",
+    tokenValidation.verifyValidRefreshToken,
+    tokenValidation.verifyValidAccessToken,
+    roleValidation.admin,
+    vehicleController.update
+);
 
 // Delete Vehicle
-Router.delete('/:vehicleId', roleValidation.admin, vehicleController.delete);
+Router.delete('/:vehicleId',
+    tokenValidation.verifyValidRefreshToken,
+    tokenValidation.verifyValidAccessToken,
+    roleValidation.admin,
+    vehicleController.delete
+    );
 
 module.exports = Router;

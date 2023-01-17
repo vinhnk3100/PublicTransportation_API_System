@@ -12,18 +12,16 @@ const orderRouter = require('./order.routes')
 // api/vnpay - Order testing ===============================================================================================================
 Router.use('/vnpay', vnPayTest)
 
-Router.use('/order', orderRouter)
-
 // api/auth - Login & Registation
 Router.use('/auth', authRouter)
 
-// api/route - Route
+// api/route - Route (Token validation checked)
 Router.use('/route', routeRouter)
 
-// api/vehicle - Vehicle
+// api/vehicle - Vehicle (Token validation checked)
 Router.use('/vehicle', vehicleRouter)
 
-// api/ticket - Ticket
+// api/ticket - Ticket (Token validation checked)
 Router.use('/ticket', ticketRoute)
 
 // ======================================= Route that need access & refresh token =================================================
@@ -36,6 +34,9 @@ Router.use(verifyValidAccessToken)
 
 // api/user - User
 Router.use('/user', userRouter)
+
+// api/order - Order
+Router.use('/order', orderRouter)
 
 // api/mgtunit - Management Unit
 Router.use('/mgtunit', managementUnitRouter)

@@ -1,7 +1,9 @@
 const Router = require('express').Router();
-const roleValidation = require("../validations/role.validation");
-const routeValidation = require("../validations/route.validation");
-const routeController = require("../controllers/route.controller");
+const routeController = require("../controllers/route.controller")
+
+const roleValidation = require("../validations/role.validation")
+const routeValidation = require("../validations/route.validation")
+const tokenValidation = require("../middlewares/auth.middleware")
 
 // Get route
 Router.get('/', routeController.get);
@@ -11,6 +13,8 @@ Router.get("/:routeId", routeController.getById);
 
 // Create route
 Router.post('/create',
+    tokenValidation.verifyValidRefreshToken,
+    tokenValidation.verifyValidAccessToken,
     roleValidation.admin,
     routeValidation.createRouteValidation,
     routeValidation.filterInvalidVehicle,
@@ -18,7 +22,12 @@ Router.post('/create',
 );
 
 // Delete route
-Router.delete('/:routeId', roleValidation.admin, routeController.delete);
+Router.delete('/:routeId',
+    tokenValidation.verifyValidRefreshToken,
+    tokenValidation.verifyValidAccessToken,
+    roleValidation.admin,
+    routeController.delete
+);
 
 
 module.exports = Router;

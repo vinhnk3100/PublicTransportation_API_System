@@ -1,7 +1,9 @@
 const Router = require("express").Router()
+const ticketController = require("../controllers/ticket.controllers")
+
+const tokenValidation = require("../middlewares/auth.middleware")
 const roleValidation = require("../validations/role.validation")
 const ticketValidation = require("../validations/ticket.validation")
-const ticketController = require("../controllers/ticket.controllers")
 
 // Get all ticket
 Router.get('/', ticketController.get);
@@ -10,10 +12,20 @@ Router.get('/', ticketController.get);
 Router.get('/:ticketId', ticketController.getById)
 
 // Create ticket
-Router.post('/create', roleValidation.admin, ticketController.create);
+Router.post('/create',
+    tokenValidation.verifyValidRefreshToken,
+    tokenValidation.verifyValidAccessToken,
+    roleValidation.admin,
+    ticketController.create
+);
 
 // Delete ticket
-Router.delete('/:ticketId', roleValidation.admin, ticketController.delete);
+Router.delete('/:ticketId',
+    tokenValidation.verifyValidRefreshToken,
+    tokenValidation.verifyValidAccessToken,
+    roleValidation.admin,
+    ticketController.delete
+);
 
 /**
  * Scanning Session
