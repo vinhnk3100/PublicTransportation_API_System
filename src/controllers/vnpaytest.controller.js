@@ -30,7 +30,7 @@ exports.createOrder = async (req, res, next) => {
     let secretKey = process.env.vnp_HashSecret;
     let vnpUrl = process.env.vnp_Url;
     let returnUrl = process.env.vnp_ReturnUrl;
-    let createDate = moment(date).format('yyyyMMDDHHMMss');
+    let createDate = moment(date).format('yyyyMMDDHHmmss');
 
     let { amount, bankCode, orderDescription, orderType, locale } = req.body
 
@@ -71,7 +71,6 @@ exports.createOrder = async (req, res, next) => {
     }
 }
 
-// địa chỉ để nhận kết quả thanh toán từ VNPAY
 exports.returnIpn = async (req, res, next) => {
     let vnp_Params = req.query;
     let secureHash = vnp_Params['vnp_SecureHash'];
@@ -103,6 +102,8 @@ exports.returnIpn = async (req, res, next) => {
     }
 }
 
+
+// địa chỉ để nhận kết quả thanh toán từ VNPAY
 exports.returnUrl = async (req, res, next) => {
     let vnp_Params = req.query;
 
@@ -121,11 +122,13 @@ exports.returnUrl = async (req, res, next) => {
         //Kiem tra xem du lieu trong db co hop le hay khong va thong bao ket qua
         return res.json({
             success: true,
+            message: "Buy ticket success",
             code: vnp_Params['vnp_ResponseCode']
         })
     } else{
         return res.json({
             success: false,
+            message: "Transaction failed",
             code: '97'
         })
     }

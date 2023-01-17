@@ -1,5 +1,5 @@
 const Router = require("express").Router();
-const authController = require("../controllers/auth.controllers")
+const authController = require("../controllers/auth.controller")
 const authValidation = require("../validations/auth.validation")
 const checkDuplicateRegister = require("../utils/checkDuplicateRegister.util")
 

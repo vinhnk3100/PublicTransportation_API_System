@@ -16,8 +16,7 @@ const TicketSchema = new Schema({
     },
     ticket_price: {
         required: true,
-        type: Schema.Types.ObjectId,
-        ref: 'Routes',
+        type: Number,
     },
     is_valid: {
         required: true,
@@ -26,7 +25,8 @@ const TicketSchema = new Schema({
     },
     ticket_type: {
         required: true,
-        type: Number
+        type: Number,
+        enum: [1, 2]
     },
     tap_count: {
         required: true,

@@ -7,18 +7,21 @@ const managementUnitRouter = require("./managementUnit.routes");
 const routeRouter = require("./route.routes")
 const ticketRoute = require("./ticket.routes")
 const vnPayTest = require('./vnpaytest.routes')
+const orderRouter = require('./order.routes')
 
 // api/vnpay - Order testing ===============================================================================================================
 Router.use('/vnpay', vnPayTest)
 
+Router.use('/order', orderRouter)
+
 // api/auth - Login & Registation
-Router.use('/auth', authRouter);
+Router.use('/auth', authRouter)
 
 // api/route - Route
-Router.use('/route', routeRouter);
+Router.use('/route', routeRouter)
 
 // api/vehicle - Vehicle
-Router.use('/vehicle', vehicleRouter);
+Router.use('/vehicle', vehicleRouter)
 
 // api/ticket - Ticket
 Router.use('/ticket', ticketRoute)
@@ -29,13 +32,13 @@ Router.use('/ticket', ticketRoute)
 Router.use(verifyValidRefreshToken)
 
 // Verify User Access Token
-Router.use(verifyValidAccessToken);
+Router.use(verifyValidAccessToken)
 
 // api/user - User
-Router.use('/user', userRouter);
+Router.use('/user', userRouter)
 
 // api/mgtunit - Management Unit
-Router.use('/mgtunit', managementUnitRouter);
+Router.use('/mgtunit', managementUnitRouter)
 
 // Handle error
 Router.use((err, req, res, next) => {

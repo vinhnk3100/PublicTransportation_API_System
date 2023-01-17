@@ -156,7 +156,6 @@ exports.buyTicket = async (req, res, next) => {
     try {
         const user = await UserService.getUserById(currentUserId);
         const route = await RouteService.getRouteById(routeId)
-        
         // Check if user existed
         if (!user || user.length < 1) {
             return res.json({
@@ -177,10 +176,11 @@ exports.buyTicket = async (req, res, next) => {
 
         // If user have enough money in wallet - Update there money wallet ======== then return true
         userWallet = user[0].wallet - route.route_price
+        const routePrice = route.route_price
 
         // Buy Ticket => Create new ticket for the user (Require: user fullname & the route ID)
-        const createTicket = await TicketService.createTicket(fullname, routeId, ticketType)
-
+        const createTicket = await TicketService.createTicket(fullname, routeId, ticketType, routePrice)
+        
         // Update qr code in ticket
         const qrCode = await QRCode.toDataURL(`https://publictransport-api.cyclic.app/api/ticket/scan/${createTicket._id}`)
         await TicketService.updateTicket(createTicket._id, {qr_code: qrCode})
