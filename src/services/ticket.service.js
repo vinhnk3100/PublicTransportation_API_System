@@ -22,7 +22,6 @@ const getTicketById = async (ticketId) => {
 
 const createTicket = async (fullname, route_id, ticketType, routePrice) => {
     try {
-        console.log("Create Ticket: ", ticketType, routePrice)
         return await TicketModel.create({
             customer_name: fullname,
             route_name: route_id,

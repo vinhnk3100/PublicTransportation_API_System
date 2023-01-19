@@ -13,7 +13,6 @@ Router.get('/:ticketId', ticketController.getById)
 
 // Create ticket
 Router.post('/create',
-    tokenValidation.verifyValidRefreshToken,
     tokenValidation.verifyValidAccessToken,
     roleValidation.admin,
     ticketController.create
@@ -21,7 +20,6 @@ Router.post('/create',
 
 // Delete ticket
 Router.delete('/:ticketId',
-    tokenValidation.verifyValidRefreshToken,
     tokenValidation.verifyValidAccessToken,
     roleValidation.admin,
     ticketController.delete

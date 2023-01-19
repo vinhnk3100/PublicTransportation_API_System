@@ -2,7 +2,7 @@ const moment = require('moment')
 const QRCode = require('qrcode')
 const querystring = require('qs')
 const { vnpParamsURLSigned } = require('../utils/vnpay.utils')
-const { UserService, TicketService } = require("../services/index");
+const { UserService, TicketService, OrderService } = require("../services/index");
 const { isWalletInsufficient } = require("../utils/checkWalletTransaction.ultis")
 
 
@@ -45,8 +45,16 @@ exports.vnPayOrder = async (ipAddr, routeAmount, bankCode, orderDescription, ord
     const signed = await vnpParamsURLSigned(vnp_Params, secretKey)
     vnp_Params['vnp_SecureHash'] = signed;
     vnpUrl += '?' + querystring.stringify(vnp_Params, { encode: false });
+    return {
+        returnUrl: vnpUrl,
+        orderData: {
+            currentUserId
+        }
+    }
+}
 
-    return vnpUrl
+exports.handleSuccessOrder = async () => {
+    const createTicket = await TicketService.createTicket(fullname, routeId, ticketType, routeAmount)
 }
 
 exports.sortObject = async (obj) => {
@@ -68,8 +76,15 @@ exports.sortObject = async (obj) => {
 // End Payment with VNPay Credit Card - NCB ==============================
 
 // Payment with Wallet App ===============================================
+/** 
+ * 1. Kiểm tra ví người dùng => false sẽ trả thẳng ra thanh toán thất bại
+ * 2. Sau khi thanh toán cập nhật ví
+ * 3. Tạo vé
+ * 4. Cập nhật mã QR
+ * 5. Cập nhật lịch sử giao dịch
+ */
 exports.walletAppOrder = async (route, user, fullname, routeId, ticketType, userWallet, routeAmount, currentUserId) => {
-    // Check user wallet is available for buying ticket / Return true => continue to buy ticket
+    // 1.
     const isSufficient = await isWalletInsufficient(route, user[0].wallet);
 
     if (!isSufficient) {
@@ -79,17 +94,17 @@ exports.walletAppOrder = async (route, user, fullname, routeId, ticketType, user
         })
     }
 
-    // If user have enough money in wallet - Update there money wallet ======== then return true
+    // 2.
     userWallet = user[0].wallet - route.route_price
 
-    // Buy Ticket => Create new ticket for the user (Require: user fullname & the route ID)
+    // 3.
     const createTicket = await TicketService.createTicket(fullname, routeId, ticketType, routeAmount)
     
-    // Update qr code in ticket
+    // 4.
     const qrCode = await QRCode.toDataURL(`https://publictransport-api.cyclic.app/api/ticket/scan/${createTicket._id}`)
     await TicketService.updateTicket(createTicket._id, {qr_code: qrCode})
 
-    // Update history purchase in user
+    // 5.
     await UserService.updateUser(currentUserId, {
         wallet: userWallet,
         $push: { history_purchase: {
@@ -99,8 +114,12 @@ exports.walletAppOrder = async (route, user, fullname, routeId, ticketType, user
             }
         }}
     })
-
     return createTicket;
+}
+
+exports.handleOrderAppWallet = async (orderType, userId, ticketId, ticketPrice) => {
+    const createOrder = await OrderService.createOrder(orderType, userId, ticketId, ticketPrice)
+    return createOrder
 }
 
 // End Payment with Wallet App ===========================================

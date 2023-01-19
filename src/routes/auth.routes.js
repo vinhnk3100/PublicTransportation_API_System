@@ -7,4 +7,6 @@ Router.post('/login', authValidation.loginValidation, authController.login);
 
 Router.post('/register', authValidation.registerValidation, checkDuplicateRegister.register, authController.register);
 
+Router.post('/refresh-token', authController.refreshToken)
+
 module.exports = Router

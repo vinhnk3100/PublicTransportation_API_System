@@ -1,7 +1,10 @@
 // AuthController - Register & Login actions
 
 const bcrypt = require('bcrypt');
+const mongoose = require('mongoose')
 const { AuthService, UserService } = require("../services/index")
+const { verifyRefreshToken } = require('../utils/jsonTokenGenerator.utils');
+
 const session = require('express-session');
 
 exports.login = async (req, res, next) => {
@@ -53,5 +56,28 @@ exports.register = async (req, res, next) => {
     } catch (e) {
         console.log("ERR: Register Error: ", e);
         next(e);
+    }
+}
+
+exports.refreshToken = async (req, res, next) => {
+    const { refresh_token } = req.headers;
+    try {
+        if (refresh_token) {
+            const { id, username } = verifyRefreshToken(refresh_token)
+            if (id && mongoose.isValidObjectId(id)) {
+                const user = await UserService.getAuthLoginUser(username)
+                if (user) {
+                    return res.json({
+                        ...AuthService.getToken(user)
+                    })
+                }
+            }
+        }
+        return next();
+    } catch (e) {
+        return res.status(401).json({
+            success: false,
+            message: `${'invalid signature' ? 'Invalid Token' : 'Refresh token expired. Please login again'}`
+        })
     }
 }

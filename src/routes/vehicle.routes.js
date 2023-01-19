@@ -14,7 +14,6 @@ Router.get("/:vehicleId", vehicleController.getById);
 
 // Create Vehicle
 Router.post("/create",
-    tokenValidation.verifyValidRefreshToken,
     tokenValidation.verifyValidAccessToken,
     roleValidation.admin,
     vehicleController.create
@@ -22,7 +21,6 @@ Router.post("/create",
 
 // Update Vehicle
 Router.put("/:vehicleId",
-    tokenValidation.verifyValidRefreshToken,
     tokenValidation.verifyValidAccessToken,
     roleValidation.admin,
     vehicleController.update
@@ -30,7 +28,6 @@ Router.put("/:vehicleId",
 
 // Delete Vehicle
 Router.delete('/:vehicleId',
-    tokenValidation.verifyValidRefreshToken,
     tokenValidation.verifyValidAccessToken,
     roleValidation.admin,
     vehicleController.delete

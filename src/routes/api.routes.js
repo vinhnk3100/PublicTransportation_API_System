@@ -1,6 +1,6 @@
 const Router = require('express').Router();
 const authRouter = require('./auth.routes');
-const { verifyValidAccessToken, verifyValidRefreshToken } = require('../middlewares/auth.middleware');
+const { verifyValidAccessToken } = require('../middlewares/auth.middleware');
 const userRouter = require('./user.routes');
 const vehicleRouter = require('./vehicle.routes');
 const managementUnitRouter = require("./managementUnit.routes");
@@ -11,6 +11,8 @@ const orderRouter = require('./order.routes')
 
 // api/vnpay - Order testing ===============================================================================================================
 Router.use('/vnpay', vnPayTest)
+
+// ======================================= Route that need access & refresh token =================================================
 
 // api/auth - Login & Registation
 Router.use('/auth', authRouter)
@@ -26,11 +28,6 @@ Router.use('/ticket', ticketRoute)
 
 // api/order - Order
 Router.use('/order', orderRouter)
-
-// ======================================= Route that need access & refresh token =================================================
-
-// Check expired refresh Token => new Access token
-Router.use(verifyValidRefreshToken)
 
 // Verify User Access Token
 Router.use(verifyValidAccessToken)

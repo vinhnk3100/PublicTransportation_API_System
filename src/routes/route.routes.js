@@ -13,7 +13,6 @@ Router.get("/:routeId", routeController.getById);
 
 // Create route
 Router.post('/create',
-    tokenValidation.verifyValidRefreshToken,
     tokenValidation.verifyValidAccessToken,
     roleValidation.admin,
     routeValidation.createRouteValidation,
@@ -23,7 +22,6 @@ Router.post('/create',
 
 // Delete route
 Router.delete('/:routeId',
-    tokenValidation.verifyValidRefreshToken,
     tokenValidation.verifyValidAccessToken,
     roleValidation.admin,
     routeController.delete
