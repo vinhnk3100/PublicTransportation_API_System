@@ -5,9 +5,41 @@ const { vnpParamsURLSigned } = require('../utils/vnpay.utils')
 const { UserService, TicketService, OrderService } = require("../services/index");
 const { isWalletInsufficient } = require("../utils/checkWalletTransaction.ultis")
 
+let getUserId = '';
+let getRouteId = '';
+let getTicketPrice = 0;
+let getUserFullname = '';
+let getTicketType = '';
 
 // Payment with VNPay Credit Card - NCB ==================================
-exports.vnPayOrder = async (ipAddr, routeAmount, bankCode, orderDescription, orderType, locale) => {
+/**
+ * 1. Chọn phương thức thanh toán
+ * 2. Gửi URL cho phép người dùng ghi thông tin thẻ
+ * 3. Nếu thành công, tạo vé - qr code
+ * 4. Tạo order và cập nhật order
+ * 5. Trả thông báo về cho ngdung
+ */
+exports.vnPayOrder = async (
+    {   
+        fullname,
+        routeId,
+        currentUserId,
+        ipAddr,
+        routeAmount,
+        bankCode,
+        orderDescription,
+        orderType,
+        locale 
+    }
+    ) => {
+    // Passing data to create Order
+    getUserId = currentUserId;
+    getRouteId = routeId;
+    getTicketPrice = routeAmount;
+    getUserFullname = fullname;
+    getTicketType = orderType;
+
+    // .1
     orderType = "topup"
     let date = new Date();
     let tmnCode = process.env.vnp_TmnCode;
@@ -45,16 +77,23 @@ exports.vnPayOrder = async (ipAddr, routeAmount, bankCode, orderDescription, ord
     const signed = await vnpParamsURLSigned(vnp_Params, secretKey)
     vnp_Params['vnp_SecureHash'] = signed;
     vnpUrl += '?' + querystring.stringify(vnp_Params, { encode: false });
-    return {
-        returnUrl: vnpUrl,
-        orderData: {
-            currentUserId
-        }
-    }
+
+    // .2
+    return vnpUrl
 }
 
-exports.handleSuccessOrder = async () => {
-    const createTicket = await TicketService.createTicket(fullname, routeId, ticketType, routeAmount)
+exports.handleSuccessVnPayOrder = async () => {
+    // 3.
+    const createTicket = await TicketService.createTicket(getUserFullname, getRouteId, getTicketType, getTicketPrice)
+    
+    const qrCode = await QRCode.toDataURL(`https://publictransport-api.cyclic.app/api/ticket/scan/${createTicket._id}`)
+    await TicketService.updateTicket(createTicket._id, {qr_code: qrCode})
+
+    // 4.
+    const createOrder = await OrderService.createOrder(getTicketType, getUserId, createTicket._id, getTicketPrice)
+    
+    // 5.
+    return createOrder
 }
 
 exports.sortObject = async (obj) => {
@@ -83,7 +122,7 @@ exports.sortObject = async (obj) => {
  * 4. Cập nhật mã QR
  * 5. Cập nhật lịch sử giao dịch
  */
-exports.walletAppOrder = async (route, user, fullname, routeId, ticketType, userWallet, routeAmount, currentUserId) => {
+exports.buyTicketWithWalletAppOrder = async (route, user, fullname, routeId, ticketType, userWallet, routeAmount, currentUserId) => {
     // 1.
     const isSufficient = await isWalletInsufficient(route, user[0].wallet);
 
@@ -104,20 +143,11 @@ exports.walletAppOrder = async (route, user, fullname, routeId, ticketType, user
     const qrCode = await QRCode.toDataURL(`https://publictransport-api.cyclic.app/api/ticket/scan/${createTicket._id}`)
     await TicketService.updateTicket(createTicket._id, {qr_code: qrCode})
 
-    // 5.
-    await UserService.updateUser(currentUserId, {
-        wallet: userWallet,
-        $push: { history_purchase: {
-            message: `Purchase ticket successfully!`,
-            data_purchase: {
-                ticket_id: createTicket._id.toHexString()
-            }
-        }}
-    })
     return createTicket;
 }
 
 exports.handleOrderAppWallet = async (orderType, userId, ticketId, ticketPrice) => {
+    // .5
     const createOrder = await OrderService.createOrder(orderType, userId, ticketId, ticketPrice)
     return createOrder
 }
