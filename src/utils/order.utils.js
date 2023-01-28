@@ -20,7 +20,7 @@ let getTicketType = '';
  * 5. Trả thông báo về cho ngdung
  */
 exports.vnPayOrder = async (
-    {   
+    {
         fullname,
         routeId,
         currentUserId,
@@ -29,9 +29,11 @@ exports.vnPayOrder = async (
         bankCode,
         orderDescription,
         orderType,
-        locale 
+        orderId,
+        locale
     }
-    ) => {
+) => {
+
     // Passing data to create Order
     getUserId = currentUserId;
     getRouteId = routeId;
@@ -48,11 +50,10 @@ exports.vnPayOrder = async (
     let returnUrl = process.env.vnp_ReturnUrl;
     let createDate = moment(date).format('yyyyMMDDHHmmss');
 
-    if(locale === null || locale === ''){
+    if (locale === null || locale === '') {
         locale = 'vn';
     }
 
-    let orderId = moment(date).format('HHmmss');
     let currCode = 'VND';
     let vnp_Params = {};
     vnp_Params['vnp_Version'] = '2.1.0';
@@ -68,7 +69,7 @@ exports.vnPayOrder = async (
     vnp_Params['vnp_ReturnUrl'] = returnUrl;
     vnp_Params['vnp_IpAddr'] = ipAddr;
     vnp_Params['vnp_CreateDate'] = createDate;
-    if(bankCode !== null && bankCode !== ''){
+    if (bankCode !== null && bankCode !== '') {
         vnp_Params['vnp_BankCode'] = bankCode;
     }
 
@@ -82,30 +83,30 @@ exports.vnPayOrder = async (
     return vnpUrl
 }
 
-exports.handleSuccessVnPayOrder = async () => {
-    // 3.
-    const createTicket = await TicketService.createTicket(getUserFullname, getRouteId, getTicketType, getTicketPrice)
-    
-    const qrCode = await QRCode.toDataURL(`https://publictransport-api.cyclic.app/api/ticket/scan/${createTicket._id}`)
-    await TicketService.updateTicket(createTicket._id, {qr_code: qrCode})
+// exports.handleSuccessVnPayOrder = async () => {
+//     // 3.
+//     const createTicket = await TicketService.createTicket(getUserFullname, getRouteId, getTicketType, getTicketPrice)
 
-    // 4.
-    const createOrder = await OrderService.createOrder(getTicketType, getUserId, createTicket._id, getRouteId)
-    
-    // 5.
-    return createOrder
-}
+//     const qrCode = await QRCode.toDataURL(`https://publictransport-api.cyclic.app/api/ticket/scan/${createTicket._id}`)
+//     await TicketService.updateTicket(createTicket._id, {qr_code: qrCode})
+
+//     // 4.
+//     const createOrder = await OrderService.createOrder(getTicketType, getUserId, createTicket._id, getRouteId)
+
+//     // 5.
+//     return createOrder
+// }
 
 exports.sortObject = async (obj) => {
-	let sorted = {};
-	let str = [];
-	let key;
-	for (key in obj){
-		if (obj.hasOwnProperty(key)) {
-		str.push(encodeURIComponent(key));
-		}
-	}
-	str.sort();
+    let sorted = {};
+    let str = [];
+    let key;
+    for (key in obj) {
+        if (obj.hasOwnProperty(key)) {
+            str.push(encodeURIComponent(key));
+        }
+    }
+    str.sort();
     for (key = 0; key < str.length; key++) {
         sorted[str[key]] = encodeURIComponent(obj[str[key]]).replace(/%20/g, "+");
     }
@@ -122,34 +123,76 @@ exports.sortObject = async (obj) => {
  * 4. Cập nhật mã QR
  * 5. Cập nhật lịch sử giao dịch
  */
-exports.buyTicketWithWalletAppOrder = async (route, user, fullname, routeId, ticketType, userWallet, routeAmount, currentUserId) => {
+exports.buyTicketWithWalletAppOrder = async (route, user, userWallet) => {
     // 1.
     const isSufficient = await isWalletInsufficient(route, user[0].wallet);
 
     if (!isSufficient) {
-        return res.json({
-            success: true,
-            message: 'Transaction Failed!'
-        })
+        return {
+            success: false,
+            code: "02",
+        }
     }
 
     // 2.
     userWallet = user[0].wallet - route.route_price
 
-    // 3.
-    const createTicket = await TicketService.createTicket(fullname, routeId, ticketType, routeAmount)
-    
-    // 4.
-    const qrCode = await QRCode.toDataURL(`https://publictransport-api.cyclic.app/api/ticket/scan/${createTicket._id}`)
-    await TicketService.updateTicket(createTicket._id, {qr_code: qrCode})
-
-    return createTicket;
+    return {
+        success: true,
+    };
 }
 
-exports.handleOrderAppWallet = async (orderType, userId, ticketId, ticketPrice) => {
+exports.handleOrderAppWallet = async (orderType, userId, ticketId, routeId) => {
     // .5
-    const createOrder = await OrderService.createOrder(orderType, userId, ticketId, ticketPrice)
+    const createOrder = await OrderService.createOrder(orderType, userId, ticketId, routeId)
     return createOrder
 }
 
 // End Payment with Wallet App ===========================================
+
+exports.createOrder = async ({ userId, fullname, routeId, ticketType, ticketPrice }) => {
+    let createOrder = null;
+    const createTicket = await TicketService.createTicket(fullname, routeId, ticketType, ticketPrice)
+
+    if (createTicket) {
+        createOrder = await OrderService.createOrder(ticketType, userId, createTicket._id, routeId)
+    }
+
+    return createOrder;
+}
+
+exports.handlePaymentSuccess = async ({ orderId }) => {
+    let result = null;
+    try {
+        const order = await OrderService.getOrderById(orderId);
+        if (order) {
+            const ticketId = order.ticket?._id;
+            const ticketType = order.ticket?.ticketType;
+
+            const qrCode = await QRCode.toDataURL(`https://publictransport-api.cyclic.app/api/ticket/scan/${ticketId}`)
+
+            const [orderUpdate, ticketUpdate] = await Promise.all(
+                [
+                    await OrderService.updateOrder(orderId, { order_status: "00" }),
+                    await TicketService.updateTicket(ticketId, {
+                        is_valid: true,
+                        qr_code: qrCode,
+                        // update new expired date  
+                        ticket_expired: parseInt(ticketType) === 1 ? Date.now() + 24 * 60 * 60 * 1000 : Date.now() + 720 * 60 * 60 * 1000,
+                    }),
+                ]
+            )
+
+            result = {
+                success: true,
+            }
+        }
+    } catch (err) {
+        result = {
+            success: false,
+            message: err,
+        }
+    }
+
+    return result;
+}

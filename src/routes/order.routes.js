@@ -2,6 +2,8 @@ const Router = require("express").Router()
 const tokenValidation = require("../middlewares/auth.middleware")
 const orderController = require('../controllers/order.controller')
 
+const OrderModel = require('../models/Order.model')
+
 // validations
 const routeValidation = require("../validations/route.validation");
 
@@ -29,9 +31,10 @@ Router.delete('/:orderId',
 )
 
 Router.delete('/',
-    tokenValidation.verifyValidAccessToken,
-    async () => {
-        return await OrderModel.deleteMany({});
+    // tokenValidation.verifyValidAccessToken,
+    async (req ,res ,next) => {
+        const response = await OrderModel.deleteMany({});
+        return res.json({message: "success!"})
     }
 )
 

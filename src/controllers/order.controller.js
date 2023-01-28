@@ -3,7 +3,16 @@ const TICKET_TYPE = require('../helpers/ticketTypes')
 const { vnpParamsURLSigned } = require('../utils/vnpay.utils')
 const { verifyToken } = require('../utils/jsonTokenGenerator.utils');
 const { OrderService, UserService, RouteService } = require("../services/index");
-const { vnPayOrder, sortObject, buyTicketWithWalletAppOrder, handleSuccessVnPayOrder, handleOrderAppWallet, getOrderData } = require('../utils/order.utils');
+const {
+    vnPayOrder,
+    sortObject,
+    buyTicketWithWalletAppOrder,
+    handleSuccessVnPayOrder,
+    handleOrderAppWallet,
+    getOrderData,
+    createOrder,
+    handlePaymentSuccess
+} = require('../utils/order.utils');
 
 exports.get = async (req, res, next) => {
     try {
@@ -55,7 +64,7 @@ exports.create = async (req, res, next) => {
     try {
         const user = await UserService.getUserById(currentUserId);
         const route = await RouteService.getRouteById(routeId);
-        
+
         if (parseInt(ticketType) === TICKET_TYPE.ONETIME_USE) {
             routeAmount = route.route_price
         } else if (parseInt(ticketType) === TICKET_TYPE.MONTH_USE) {
@@ -69,46 +78,64 @@ exports.create = async (req, res, next) => {
                 message: "User is not existed!"
             })
         }
+        const order = await createOrder({ userId: currentUserId, fullname, routeId, ticketType: orderType, ticketPrice: routeAmount });
 
-        // Transactions with VNPay ======================================================
-        if (orderType === 1) {
-            let ipAddr = req.headers['x-forwarded-for'] ||
-                req.connection.remoteAddress ||
-                req.socket.remoteAddress ||
-                req.connection.socket.remoteAddress;
+        switch (orderType) {
+            // Transactions with VNPay ======================================================
+            case 1:
+                let ipAddr = req.headers['x-forwarded-for'] ||
+                    req.connection.remoteAddress ||
+                    req.socket.remoteAddress ||
+                    req.connection.socket.remoteAddress;
 
-            const vnPayOrderData = {
-                fullname,
-                routeId,
-                currentUserId,
-                ipAddr,
-                routeAmount,
-                bankCode,
-                orderDescription,
-                orderType,
-                locale
-            }
+                const vnPayOrderData = {
+                    fullname,
+                    routeId,
+                    currentUserId,
+                    ipAddr,
+                    routeAmount,
+                    bankCode,
+                    orderDescription,
+                    orderType,
+                    locale
+                }
 
-            const getVNPUrl = await vnPayOrder(vnPayOrderData)
-            
-            return res.json({
-                success: true,
-                url: getVNPUrl
-            })
+                const vnpayURL = await vnPayOrder({ ...vnPayOrderData, orderId: order?._id.toString() });
+
+                if (vnpayURL && order) {
+                    return res.json({
+                        success: true,
+                        url: vnpayURL
+                    })
+                } else {
+                    return res.json({
+                        success: false,
+                        message: "Lỗi hệ thống",
+                    })
+                }
+            // Transaction with Wallet App ==================================================
+            case 2:
+                const transactionRes = await buyTicketWithWalletAppOrder(route, user, userWallet);
+                if (!transactionRes?.success) {
+                    return res.json({
+                        success: true,
+                        code: transactionRes?.code,
+                    })
+                }
+                // Handle after transaction
+                const updateOrder = await handlePaymentSuccess({ orderId: order?._id.toString() });
+
+                return res.json({
+                    success: !!updateOrder?.success,
+                    code: !!updateOrder?.success ? '00' : '01',
+                })
+
+            default:
+                return;
         }
 
-        // Transaction with Wallet App ==================================================
-        const newTicket = await buyTicketWithWalletAppOrder(route, user, fullname, routeId, ticketType, userWallet, routeAmount, currentUserId)
-        
-        // Handle after transaction
-        await handleOrderAppWallet(orderType, currentUserId, newTicket._id, newTicket.ticket_price)
-        
-        return res.json({
-            success: true,
-            message: 'Ticket bought successfully!'
-        })
-
     } catch (e) {
+        console.log("error", e.message);
         throw new Error(e.message)
     }
 }
@@ -124,32 +151,42 @@ exports.returnUrl = async (req, res, next) => {
 
     vnp_Params = await sortObject(vnp_Params);
 
-
     let secretKey = process.env.vnp_HashSecret;
 
     const signed = await vnpParamsURLSigned(vnp_Params, secretKey)
 
-    if(secureHash === signed){
-        // ===== Xử lý hậu thanh toán
-        handleSuccessVnPayOrder()
+    if (secureHash === signed) {
+        if (vnp_Params['vnp_ResponseCode'] === "00") {
 
-        // ===== Kiem tra xem du lieu trong db co hop le hay khong va thong bao ket qua
-        return res.json({
-            success: true,
-            message: "Ticket bought successfully",
-            code: vnp_Params['vnp_ResponseCode']
-        })
-    } else{
+            // ===== Xử lý hậu thanh toán
+            const orderId = vnp_Params['vnp_TxnRef'];
+            const updateOrder = await handlePaymentSuccess({ orderId });
+
+            // ===== Kiem tra xem du lieu trong db co hop le hay khong va thong bao ket qua
+            return res.json({
+                success: !!updateOrder?.success,
+                message: !!updateOrder?.success ? 'Giao dịch thành công' : updateOrder?.message,
+                code: vnp_Params['vnp_ResponseCode']
+            })
+        }
+
+        else {
+            return res.json({
+                success: false,
+                message: 'Giao dịch thất bại',
+                code: '97'
+            })
+        }
+    } else {
         return res.json({
             success: false,
-            message: "Transaction failed",
-            code: '97'
+            message: 'Chữ ký không hợp lệ',
         })
     }
 }
 
 // Delete order
-exports.delete = async (req ,res ,next) => {
+exports.delete = async (req, res, next) => {
     const { orderId } = req.params
     try {
         const orderDelete = await OrderService.deleteOrder(orderId)

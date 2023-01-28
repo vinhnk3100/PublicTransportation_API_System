@@ -8,6 +8,11 @@ const OrderSchema = new Schema({
         required: true,
         enum: [1, 2]
     },
+    order_status: {
+        type: String,
+        required: true,
+        enum: ["00", "01"],
+    },
     user: {
         type: Schema.Types.ObjectId,
         ref: "Users",
@@ -19,11 +24,8 @@ const OrderSchema = new Schema({
     route: {
         type: Schema.Types.ObjectId,
         ref: "Routes",
-    }
-    // ticket_price: {
-    //     type: Number
-    // }
-}, {timestamps: true} )
+    },
+}, { timestamps: true })
 
 const Order = mongoose.model("Orders", OrderSchema)
 

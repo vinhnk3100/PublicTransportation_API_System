@@ -8,13 +8,32 @@ const getOrder = async () => {
     }
 }
 
+const getOrderById = async (id) => {
+    try {
+        return await OrderModel.findById(id).populate("user", "fullname").populate("ticket").populate("route").lean().exec();
+    } catch (e) {
+        throw new Error(e.message)
+    }
+}
+
 const createOrder = async (orderType, userId, ticketId, routeId) => {
     try {
         return await OrderModel.create({
             order_type: orderType,
+            order_status: "01",
             user: userId,
             ticket: ticketId,
             route: routeId,
+        })
+    } catch (e) {
+        throw new Error(e.message)
+    }
+}
+
+const updateOrder = async (orderId, update) => {
+    try {
+        return await OrderModel.findByIdAndUpdate({ _id: orderId }, update, {
+            new: true
         })
     } catch (e) {
         throw new Error(e.message)
@@ -31,6 +50,8 @@ const deleteOrder = async (orderId) => {
 
 module.exports = {
     getOrder,
+    getOrderById,
     createOrder,
-    deleteOrder
+    updateOrder,
+    deleteOrder,
 }

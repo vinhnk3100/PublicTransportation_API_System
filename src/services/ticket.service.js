@@ -20,13 +20,13 @@ const getTicketById = async (ticketId) => {
     }
 }
 
-const createTicket = async (fullname, route_id, ticketType, routePrice) => {
+const createTicket = async (fullname, route_id, ticketType, ticketPrice) => {
     try {
         return await TicketModel.create({
             customer_name: fullname,
             route_name: route_id,
-            ticket_price: parseInt(ticketType) === 1 ? routePrice : 50000,
-            is_valid: true,
+            ticket_price: ticketPrice,
+            is_valid: false,
             tap_count: 0,
             ticket_expired: parseInt(ticketType) === 1 ? Date.now() + 24 * 60 * 60 * 1000 : Date.now() + 720 * 60 * 60 * 1000,
             ticket_type: parseInt(ticketType)
