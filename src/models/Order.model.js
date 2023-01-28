@@ -16,9 +16,13 @@ const OrderSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: "Tickets",
     },
-    ticket_price: {
-        type: Number
+    route: {
+        type: Schema.Types.ObjectId,
+        ref: "Routes",
     }
+    // ticket_price: {
+    //     type: Number
+    // }
 }, {timestamps: true} )
 
 const Order = mongoose.model("Orders", OrderSchema)

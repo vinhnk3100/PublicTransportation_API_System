@@ -90,7 +90,7 @@ exports.handleSuccessVnPayOrder = async () => {
     await TicketService.updateTicket(createTicket._id, {qr_code: qrCode})
 
     // 4.
-    const createOrder = await OrderService.createOrder(getTicketType, getUserId, createTicket._id, getTicketPrice)
+    const createOrder = await OrderService.createOrder(getTicketType, getUserId, createTicket._id, getRouteId)
     
     // 5.
     return createOrder

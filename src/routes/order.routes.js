@@ -28,4 +28,11 @@ Router.delete('/:orderId',
     orderController.delete
 )
 
+Router.delete('/',
+    tokenValidation.verifyValidAccessToken,
+    async () => {
+        return await OrderModel.deleteMany({});
+    }
+)
+
 module.exports = Router

@@ -2,19 +2,19 @@ const OrderModel = require('../models/Order.model')
 
 const getOrder = async () => {
     try {
-        return await OrderModel.find({}).populate("user", "fullname").populate("ticket").lean().exec();
+        return await OrderModel.find({}).populate("user", "fullname").populate("ticket").populate("route").lean().exec();
     } catch (e) {
         throw new Error(e.message)
     }
 }
 
-const createOrder = async (orderType, userId, ticketId, ticketPrice) => {
+const createOrder = async (orderType, userId, ticketId, routeId) => {
     try {
         return await OrderModel.create({
             order_type: orderType,
             user: userId,
             ticket: ticketId,
-            ticket_price: ticketPrice
+            route: routeId,
         })
     } catch (e) {
         throw new Error(e.message)
