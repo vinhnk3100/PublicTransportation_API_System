@@ -3,8 +3,10 @@ const TicketModel = require('../models/Ticket.model')
 const getTicket = async () => {
     try {
         return await TicketModel.find({})
-            .populate("route_name", "route_name")
-            .populate('ticket_price', "route_price").lean().exec();
+            .populate("user")
+            .populate("route")
+            .populate('ticket_price', "route_price")
+            .lean().exec();
     } catch (e) {
         throw new Error(e.message)
     }
@@ -12,19 +14,20 @@ const getTicket = async () => {
 
 const getTicketById = async (ticketId) => {
     try {
-        return await TicketModel.findById( {_id: ticketId })
-            .populate("route_name", "route_name")
+        return await TicketModel.findById({ _id: ticketId })
+            .populate("user")
+            .populate("route")
             .populate('ticket_price', "route_price").lean().exec();
     } catch (e) {
         throw new Error(e.message)
     }
 }
 
-const createTicket = async (fullname, route_id, ticketType, ticketPrice) => {
+const createTicket = async (userId, route_id, ticketType, ticketPrice) => {
     try {
         return await TicketModel.create({
-            customer_name: fullname,
-            route_name: route_id,
+            user: userId,
+            route: route_id,
             ticket_price: ticketPrice,
             is_valid: false,
             tap_count: 0,

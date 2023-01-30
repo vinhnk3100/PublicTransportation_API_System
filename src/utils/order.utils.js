@@ -152,7 +152,7 @@ exports.handleOrderAppWallet = async (orderType, userId, ticketId, routeId) => {
 
 exports.createOrder = async ({ userId, fullname, routeId, ticketType, ticketPrice }) => {
     let createOrder = null;
-    const createTicket = await TicketService.createTicket(fullname, routeId, ticketType, ticketPrice)
+    const createTicket = await TicketService.createTicket(userId, routeId, ticketType, ticketPrice)
 
     if (createTicket) {
         createOrder = await OrderService.createOrder(ticketType, userId, createTicket._id, routeId)

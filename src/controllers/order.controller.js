@@ -78,7 +78,7 @@ exports.create = async (req, res, next) => {
                 message: "User is not existed!"
             })
         }
-        const order = await createOrder({ userId: currentUserId, fullname, routeId, ticketType: orderType, ticketPrice: routeAmount });
+        const order = await createOrder({ userId: currentUserId, fullname, routeId, ticketType: ticketType, ticketPrice: routeAmount });
 
         switch (orderType) {
             // Transactions with VNPay ======================================================

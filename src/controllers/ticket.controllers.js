@@ -60,7 +60,7 @@ exports.create = async (req, res, next) => {
     const { route_id, ticket_type } = req.body
     const { access_token } = req.headers;
     try {
-        const { fullname } = verifyToken(access_token);
+        const { _id } = verifyToken(access_token);
         const route = await RouteService.getRouteById(route_id);
         if (!route || route.length < 1) {
             return res.json({
@@ -68,7 +68,7 @@ exports.create = async (req, res, next) => {
                 message: "Route not existed!"
             })
         }
-        const ticket = await TicketService.createTicket(fullname, route_id, ticket_type, expiredTime);
+        const ticket = await TicketService.createTicket(_id, route_id, ticket_type, expiredTime);
         return res.json({
             success: true,
             message: "Ticket create!",

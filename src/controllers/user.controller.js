@@ -179,7 +179,7 @@ exports.buyTicket = async (req, res, next) => {
         const routePrice = route.route_price
 
         // Buy Ticket => Create new ticket for the user (Require: user fullname & the route ID)
-        const createTicket = await TicketService.createTicket(fullname, routeId, ticketType, routePrice)
+        const createTicket = await TicketService.createTicket(id, routeId, ticketType, routePrice)
         
         // Update qr code in ticket
         const qrCode = await QRCode.toDataURL(`https://publictransport-api.cyclic.app/api/ticket/scan/${createTicket._id}`)
