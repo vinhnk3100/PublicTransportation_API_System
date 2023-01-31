@@ -147,7 +147,7 @@ exports.delete = async (req, res, next) => {
 // Buy Ticket
 exports.buyTicket = async (req, res, next) => {
     const { access_token } = req.headers;
-    const { id, fullname } = verifyToken(access_token)
+    const { id } = verifyToken(access_token)
     const currentUserId = id;
     const routeId = req.routeInvalidFiltered;
     const ticketType = req.ticketType
@@ -184,17 +184,6 @@ exports.buyTicket = async (req, res, next) => {
         // Update qr code in ticket
         const qrCode = await QRCode.toDataURL(`https://publictransport-api.cyclic.app/api/ticket/scan/${createTicket._id}`)
         await TicketService.updateTicket(createTicket._id, {qr_code: qrCode})
-
-        // Update history purchase in user
-        await UserService.updateUser(id, {
-            wallet: userWallet,
-            $push: { history_purchase: {
-                message: `Purchase ticket successfully!`,
-                data_purchase: {
-                    ticket_id: createTicket._id.toHexString()
-                }
-            }}
-        })
 
         return res.json({
             success: true,

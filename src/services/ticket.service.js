@@ -71,7 +71,7 @@ const updateTicketIdWithDeletedRoute = async (listOfTicketId) => {
 const deleteTicket = async (ticketId) => {
     try {
         return await TicketModel.findByIdAndDelete({ _id: ticketId })
-            .populate("route_name", "route_name")
+            .populate("route")
             .populate('ticket_price', "route_price").lean().exec();
     } catch (e) {
         throw new Error(e.message)

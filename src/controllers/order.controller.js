@@ -7,9 +7,6 @@ const {
     vnPayOrder,
     sortObject,
     buyTicketWithWalletAppOrder,
-    handleSuccessVnPayOrder,
-    handleOrderAppWallet,
-    getOrderData,
     createOrder,
     handlePaymentSuccess
 } = require('../utils/order.utils');
@@ -89,9 +86,6 @@ exports.create = async (req, res, next) => {
                     req.connection.socket.remoteAddress;
 
                 const vnPayOrderData = {
-                    fullname,
-                    routeId,
-                    currentUserId,
                     ipAddr,
                     routeAmount,
                     bankCode,
@@ -191,12 +185,20 @@ exports.delete = async (req, res, next) => {
     try {
         const orderDelete = await OrderService.deleteOrder(orderId)
 
+        if (!orderDelete || orderDelete.length < 1) {
+            return res.json({
+                success: true,
+                message: "No order found!"
+            })
+        }
+
         return res.json({
             success: true,
             message: "Order delete successfully",
             ticket: orderDelete
         })
     } catch (e) {
-        throw new Error(e.message)
+        console.log("OrderController: Delete Order Error: ", e);
+        next(e);
     }
 }

@@ -2,14 +2,8 @@ const moment = require('moment')
 const QRCode = require('qrcode')
 const querystring = require('qs')
 const { vnpParamsURLSigned } = require('../utils/vnpay.utils')
-const { UserService, TicketService, OrderService } = require("../services/index");
+const { TicketService, OrderService } = require("../services/index");
 const { isWalletInsufficient } = require("../utils/checkWalletTransaction.ultis")
-
-let getUserId = '';
-let getRouteId = '';
-let getTicketPrice = 0;
-let getUserFullname = '';
-let getTicketType = '';
 
 // Payment with VNPay Credit Card - NCB ==================================
 /**
@@ -21,9 +15,6 @@ let getTicketType = '';
  */
 exports.vnPayOrder = async (
     {
-        fullname,
-        routeId,
-        currentUserId,
         ipAddr,
         routeAmount,
         bankCode,
@@ -33,13 +24,6 @@ exports.vnPayOrder = async (
         locale
     }
 ) => {
-
-    // Passing data to create Order
-    getUserId = currentUserId;
-    getRouteId = routeId;
-    getTicketPrice = routeAmount;
-    getUserFullname = fullname;
-    getTicketType = orderType;
 
     // .1
     orderType = "topup"
@@ -82,20 +66,6 @@ exports.vnPayOrder = async (
     // .2
     return vnpUrl
 }
-
-// exports.handleSuccessVnPayOrder = async () => {
-//     // 3.
-//     const createTicket = await TicketService.createTicket(getUserFullname, getRouteId, getTicketType, getTicketPrice)
-
-//     const qrCode = await QRCode.toDataURL(`https://publictransport-api.cyclic.app/api/ticket/scan/${createTicket._id}`)
-//     await TicketService.updateTicket(createTicket._id, {qr_code: qrCode})
-
-//     // 4.
-//     const createOrder = await OrderService.createOrder(getTicketType, getUserId, createTicket._id, getRouteId)
-
-//     // 5.
-//     return createOrder
-// }
 
 exports.sortObject = async (obj) => {
     let sorted = {};
@@ -171,7 +141,7 @@ exports.handlePaymentSuccess = async ({ orderId }) => {
 
             const qrCode = await QRCode.toDataURL(`https://publictransport-api.cyclic.app/api/ticket/scan/${ticketId}`)
 
-            const [orderUpdate, ticketUpdate] = await Promise.all(
+            await Promise.all(
                 [
                     await OrderService.updateOrder(orderId, { order_status: "00" }),
                     await TicketService.updateTicket(ticketId, {
