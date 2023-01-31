@@ -11,6 +11,9 @@ const app = express();
 const cors = require("cors")
 const PORT = process.env.PORT;
 
+// set the view engine to ejs
+app.set('view engine', 'ejs');
+
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
@@ -26,7 +29,6 @@ app.use(
 );
 
 app.use(cookieParser());
-
 
 // ======================= Router Call
 const routes = require('./src/routes')

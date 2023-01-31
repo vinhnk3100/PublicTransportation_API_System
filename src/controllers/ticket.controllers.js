@@ -110,8 +110,8 @@ exports.scanById = async (req, res, next) => {
     const ticketId = res.locals.ticketId
     await TicketService.updateTicket(ticketId, { $inc: { tap_count: 1 }})
 
-    return res.json({
+    return res.render('pages/scanTicketSuccess.ejs', {
         success: true,
-        message: "Ticket Tapping Success"
-    })
+        message: "Ticket tapping Success"
+    });
 }
