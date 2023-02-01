@@ -35,10 +35,10 @@ exports.checkValidTicket = async (req, res, next) => {
     const ticket = res.locals.ticket
     try {
         if (!ticket.is_valid) {
-            return res.json({
+            return res.render('pages/scanTicketFalse', {
                 success: false,
-                message: "Ticket is invalid"
-            })
+                message: "Ticket is Invalid"
+            });
         }
 
         next()
@@ -73,18 +73,18 @@ exports.checkTicketTypeAndTapCount = async (req, res, next) => {
     try {
         if (ticket.ticket_type === TICKET_TYPE.ONETIME_USE && ticket.tap_count >= 1) {
             await TicketService.updateTicket(ticketId, { is_valid: false })
-            return res.json({
+            return res.render('pages/scanTicketFalse', {
                 success: false,
-                message: "Ticket is invalid"
-            })
+                message: "Ticket is Invalid"
+            });
         }
     
         if (ticket.ticket_type === TICKET_TYPE.MONTH_USE && ticket.tap_count >= 30) {
             await TicketService.updateTicket(ticketId, { is_valid: false })
-            return res.json({
+            return res.render('pages/scanTicketFalse', {
                 success: false,
-                message: "Ticket is invalid"
-            })
+                message: "Ticket is Invalid"
+            });
         }
     
         next()
