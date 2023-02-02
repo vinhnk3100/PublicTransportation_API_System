@@ -20,12 +20,12 @@ const RouteSchema = new Schema({
         required: true
     },
     time_start: {
-        hours: {type: Number, required: true},
-        minutes: {type: Number, required: true}
+        hours: {type: String, required: true},
+        minutes: {type: String, required: true}
     },
     time_end: {
-        hours: {type: Number, required: true},
-        minutes: {type: Number, required: true}
+        hours: {type: String, required: true},
+        minutes: {type: String, required: true}
     },
     route_spacing: {
         type: String,

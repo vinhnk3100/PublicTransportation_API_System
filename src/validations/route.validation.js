@@ -17,23 +17,19 @@ exports.createRouteValidation = [
         .notEmpty().withMessage("Time start field can not be empty!"),
     check("time_start.hours")
         .exists().withMessage("Time start hours field can not be empty!")
-        .notEmpty().withMessage("Time start hours field can not be empty!")
-        .isInt({ min:6, max: 10}),
+        .notEmpty().withMessage("Time start hours field can not be empty!"),
     check("time_start.minutes")
         .exists().withMessage("Time start minutes field can not be empty!")
-        .notEmpty().withMessage("Time start minutes field can not be empty!")
-        .isInt({ min:0, max: 59}),
+        .notEmpty().withMessage("Time start minutes field can not be empty!"),
     check("time_end")
         .exists().withMessage("Time end field can not be empty!")
         .notEmpty().withMessage("Time end field can not be empty!"),
     check("time_end.hours")
         .exists().withMessage("Time end hours field can not be empty!")
-        .notEmpty().withMessage("Time end hours field can not be empty!")
-        .isInt({ min:12, max: 21}),
+        .notEmpty().withMessage("Time end hours field can not be empty!"),
     check("time_end.minutes")
         .exists().withMessage("Time end minutes field can not be empty!")
-        .notEmpty().withMessage("Time end minutes field can not be empty!")
-        .isInt({ min:0, max: 59}),
+        .notEmpty().withMessage("Time end minutes field can not be empty!"),
     check("route_number")
         .exists().withMessage("Route number field can not be empty!")
         .notEmpty().withMessage("Route number field can not be empty!"),

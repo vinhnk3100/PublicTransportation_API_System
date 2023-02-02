@@ -37,7 +37,7 @@ const createUser = async (username, fullname, password, phoneNumber, role, walle
             password: bcrypt.hashSync(password, 10),
             phoneNumber: phoneNumber,
             role: role,
-            wallet: wallet
+            wallet: 50000
         })
     } catch (e) {
         throw new Error(e.message)
