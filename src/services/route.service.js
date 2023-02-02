@@ -1,8 +1,8 @@
 const RouteModel = require('../models/Route.model')
 
-const getRoute = async () => {
+const getRoute = async ({searchQuery}) => {
     try {
-        return await RouteModel.find({}).populate("vehicles").populate("route_agencies", "mgtunit_name").lean().exec();
+        return await RouteModel.find(searchQuery).populate("vehicles").populate("route_agencies", "mgtunit_name").lean().exec();
     } catch (e) {
         throw new Error(e.message)
     }

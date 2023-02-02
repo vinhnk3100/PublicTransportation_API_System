@@ -4,10 +4,23 @@ const filterTicketIdSameRouteId = require('../utils/filterTicketIdSameRouteId.ut
 
 // Get route
 exports.get = async (req, res, next) => {
+    console.log("req", req.query);
+
+    let searchQuery = {};
+
+    if(Object.keys(req.query).length > 0){
+        const searchPattern = Object.keys(req.query).map((key) => {
+            return {[key] : new RegExp(req.query[key],'i')}
+        });
+        if(searchPattern?.length > 0){
+            searchQuery = searchPattern?.reduce((obj,item)=>({...obj,[Object.keys(item)[0]]: Object.values(item)[0]}),{})
+        }   
+
+    }
     try {
         // Query Database Services
-        const routes = await RouteService.getRoute()
-        
+        const routes = await RouteService.getRoute({ searchQuery })
+
         if (!routes || routes.length < 1) {
             return res.json({
                 success: true,
@@ -104,15 +117,15 @@ exports.delete = async (req, res, next) => {
                 message: "Route not existed!"
             });
         };
-        
+
         // 2.
         const listTicketId = await filterTicketIdSameRouteId(routes, tickets)
         await TicketService.updateTicketIdWithDeletedRoute(listTicketId)
 
         // 3.
         await VehicleService.updateFilterVehicle(
-            routes.vehicles.map(route => {return route._id.toHexString()}),
-            {"vehicle_available": true,}
+            routes.vehicles.map(route => { return route._id.toHexString() }),
+            { "vehicle_available": true, }
         );
 
         // 4.
@@ -123,7 +136,7 @@ exports.delete = async (req, res, next) => {
             message: `Route ${routeId} deleted!`,
             route_delete: routes
         });
-        
+
     } catch (e) {
         console.log("ERR: Register Error: ", e);
         next(e);
