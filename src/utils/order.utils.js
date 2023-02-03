@@ -2,7 +2,7 @@ const moment = require('moment')
 const QRCode = require('qrcode')
 const querystring = require('qs')
 const { vnpParamsURLSigned } = require('../utils/vnpay.utils')
-const { TicketService, OrderService } = require("../services/index");
+const { TicketService, OrderService, UserService } = require("../services/index");
 const { isWalletInsufficient } = require("../utils/checkWalletTransaction.ultis")
 
 // Payment with VNPay Credit Card - NCB ==================================
@@ -106,6 +106,9 @@ exports.buyTicketWithWalletAppOrder = async (route, user, userWallet) => {
 
     // 2.
     userWallet = user[0].wallet - route.route_price
+
+    // 3.
+    await UserService.updateUser(user[0]._id, { wallet: userWallet })
 
     return {
         success: true,

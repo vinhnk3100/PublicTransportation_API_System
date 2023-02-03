@@ -98,6 +98,22 @@ exports.delete = async (req, res, next) => {
     }
 }
 
+// delete all tickets
+exports.deleteAll = async (req, res, next) => {
+
+    try {
+        await TicketService.deleteAllTicket();
+        
+        return res.json({
+            success: true,
+            message: "Remove all tickets",
+        })
+    } catch (e) {
+        console.log("TicketController: Delete Ticket Error: ", e);
+        next(e);
+    }
+}
+
 // Scanning Ticket
 /** 
  * 1. Get ticket ID from query 

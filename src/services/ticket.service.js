@@ -78,6 +78,14 @@ const deleteTicket = async (ticketId) => {
     }
 }
 
+const deleteAllTicket = async (ticketId) => {
+    try {
+        return await TicketModel.deleteMany();
+    } catch (e) {
+        throw new Error(e.message)
+    }
+}
+
 module.exports = {
     getTicket,
     getTicketById,
@@ -85,5 +93,6 @@ module.exports = {
     updateTicket,
     updateManyTicket,
     updateTicketIdWithDeletedRoute,
-    deleteTicket
+    deleteTicket,
+    deleteAllTicket
 }

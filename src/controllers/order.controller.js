@@ -116,6 +116,7 @@ exports.create = async (req, res, next) => {
                         code: transactionRes?.code,
                     })
                 }
+                
                 // Handle after transaction
                 const updateOrder = await handlePaymentSuccess({ orderId: order?._id.toString() });
 

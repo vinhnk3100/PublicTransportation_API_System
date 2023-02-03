@@ -22,7 +22,15 @@ Router.post('/create',
 Router.delete('/:ticketId',
     tokenValidation.verifyValidAccessToken,
     roleValidation.admin,
+    ticketValidation.checkTicketId,
     ticketController.delete
+);
+
+// Delete all ticket
+Router.delete('/',
+    tokenValidation.verifyValidAccessToken,
+    roleValidation.admin,
+    ticketController.deleteAll
 );
 
 /**
