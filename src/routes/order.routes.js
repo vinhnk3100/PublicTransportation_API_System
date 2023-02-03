@@ -1,6 +1,7 @@
 const Router = require("express").Router()
 const tokenValidation = require("../middlewares/auth.middleware")
 const orderController = require('../controllers/order.controller')
+const roleValidation = require("../validations/role.validation")
 
 const TicketModel = require("../models/Ticket.model");
 const OrderModel = require('../models/Order.model')
@@ -28,16 +29,16 @@ Router.get('/vnpay-return',
 // Delete order
 Router.delete('/:orderId',
     tokenValidation.verifyValidAccessToken,
+    roleValidation.admin,
     orderController.delete
 )
 
+// Delete all order
 Router.delete('/',
-    // tokenValidation.verifyValidAccessToken,
-    async (req ,res ,next) => {
-        const response = await OrderModel.deleteMany({});
-        await TicketModel.deleteMany({});
-        return res.json({message: "success!"})
-    }
+    tokenValidation.verifyValidAccessToken,
+    roleValidation.admin,
+    orderController.deleteAll
 )
+
 
 module.exports = Router

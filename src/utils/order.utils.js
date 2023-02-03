@@ -149,14 +149,12 @@ exports.handlePaymentSuccess = async ({ orderId }) => {
         const ticketId = order.ticket?._id;
         const ticketType = order.ticket?.ticket_type;
 
-        const qrCode = await QRCode.toDataURL(`https://publictransport-api.cyclic.app/api/ticket/scan/${ticketId}`)
-
         await Promise.all(
             [
                 await OrderService.updateOrder(orderId, { order_status: "00" }),
                 await TicketService.updateTicket(ticketId, {
                     is_valid: true,
-                    qr_code: qrCode,
+                    qr_code: await QRCode.toDataURL(`https://publictransport-api.cyclic.app/api/ticket/scan/${ticketId}`),
                     // update new expired date  
                     ticket_expired: parseInt(ticketType) === 1 ? Date.now() + 24 * 60 * 60 * 1000 : Date.now() + 720 * 60 * 60 * 1000,
                 }),

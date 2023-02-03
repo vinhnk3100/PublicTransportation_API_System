@@ -48,10 +48,19 @@ const deleteOrder = async (orderId) => {
     }
 }
 
+const deleteAllOrder = async () => {
+    try {
+        return await OrderModel.deleteMany();
+    } catch (e) {
+        throw new Error(e.message)
+    }
+}
+
 module.exports = {
     getOrder,
     getOrderById,
     createOrder,
     updateOrder,
     deleteOrder,
+    deleteAllOrder
 }

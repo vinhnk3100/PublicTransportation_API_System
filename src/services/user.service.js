@@ -66,8 +66,6 @@ const deleteUser = async (userId) => {
     }
 }
 
-// ========================================== Utilities Sections ==========================================
-
 module.exports = {
     getUser,
     getUserById,

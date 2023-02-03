@@ -34,16 +34,8 @@ exports.get = async (req, res, next) => {
 
 // Get by UID
 exports.getById = async (req, res, next) => {
-    const { userId } = req.params;
     try {
-        const user = await UserService.getUserById(userId);
-
-        if (!user || user.length < 1) {
-            return res.json({
-                success: false,
-                message: "User is not existed!"
-            })
-        }
+        const user = res.locals.user
 
         return res.json({
             success: true,
@@ -76,17 +68,17 @@ exports.create = async (req, res, next) => {
 
 // Update by Id
 exports.update = async (req, res, next) => {
-    const { userId } = req.params;
-    const update = req.body;
-    
-    if (update.role && req.session.role !== ROLE.ADMIN) {
-        return res.json({
-            success: true,
-            message: "Access denied. You do not have permission to change role!"
-        })
-    }
-    
     try {
+        const userId = res.locals.userId
+        const update = req.body;
+    
+        if (update.role && req.session.role !== ROLE.ADMIN) {
+            return res.json({
+                success: true,
+                message: "Access denied. You do not have permission to change role!"
+            })
+        }
+
         let updateUser = await UserService.updateUser(userId, update)
 
         if (!updateUser || updateUser.length < 1) {
@@ -144,56 +136,26 @@ exports.delete = async (req, res, next) => {
 
 // ========================= Utilities Sections
 
-// Buy Ticket
-exports.buyTicket = async (req, res, next) => {
-    const { access_token } = req.headers;
-    const { id } = verifyToken(access_token)
-    const currentUserId = id;
-    const routeId = req.routeInvalidFiltered;
-    const ticketType = req.ticketType
-    let userWallet = 0;
-
+// Add money to Wallet
+exports.depositAmountWallet = async (req, res, next) => {
     try {
-        const user = await UserService.getUserById(currentUserId);
-        const route = await RouteService.getRouteById(routeId)
-        // Check if user existed
-        if (!user || user.length < 1) {
-            return res.json({
-                success: false,
-                message: "User is not existed!"
-            })
-        }
+        const { access_token } = req.headers;
+        const { id } = verifyToken(access_token)
+        const userId = id
+        const update = req.body;
 
-        // Check user wallet is available for buying ticket / Return true => continue to buy ticket
-        const isSufficient = await isWalletInsufficient(route, user[0].wallet);
+        const updateWallet = await UserService.updateUser(userId, { $inc: { wallet: update.wallet }});
 
-        if (!isSufficient) {
-            return res.json({
-                success: true,
-                message: 'Transaction Failed!'
-            })
-        }
-
-        // If user have enough money in wallet - Update there money wallet ======== then return true
-        userWallet = user[0].wallet - route.route_price
-        const routePrice = route.route_price
-
-        // Buy Ticket => Create new ticket for the user (Require: user fullname & the route ID)
-        const createTicket = await TicketService.createTicket(id, routeId, ticketType, routePrice)
-        
-        // Update qr code in ticket
-        const qrCode = await QRCode.toDataURL(`https://publictransport-api.cyclic.app/api/ticket/scan/${createTicket._id}`)
-        await TicketService.updateTicket(createTicket._id, {qr_code: qrCode})
+        await updateWallet.save();
 
         return res.json({
             success: true,
-            message: 'Ticket bought successfully!',
-            ticket_data: createTicket,
-            qr_code: qrCode
+            message: `User ${userId} deposit wallet success!`,
+            wallet: updateWallet
         })
 
     } catch (e) {
-        console.log("UserController: Buy Ticket Error: ", e);
-        next(e); 
+        console.log("UserController: Update Wallet Error: ", e);
+        next(e);
     }
 }

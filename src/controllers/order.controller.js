@@ -203,3 +203,17 @@ exports.delete = async (req, res, next) => {
         next(e);
     }
 }
+
+exports.deleteAll = async (req, res, next) => {
+    try { 
+        await OrderService.deleteAllOrder();
+
+        return res.json({
+            success: true,
+            message: "Remove all order",
+        })
+    } catch (e) {
+        console.log("OrderController: Delete All Order Error: ", e);
+        next(e);
+    }
+}
