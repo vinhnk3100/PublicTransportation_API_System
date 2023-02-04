@@ -40,7 +40,7 @@ Router.delete('/',
  * 3. Check ticket expired
  * 4. Check the counting tap (check in) & type of ticket
  */
-Router.post('/scan/:ticketId',
+Router.get('/scan/:ticketId',
     ticketValidation.checkTicketId,
     ticketValidation.checkTicketExpired,
     ticketValidation.checkTicketTypeAndTapCount,

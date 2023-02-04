@@ -149,6 +149,7 @@ exports.handlePaymentSuccess = async ({ orderId }) => {
         const ticketId = order.ticket?._id;
         const ticketType = order.ticket?.ticket_type;
         const qrCode =  await QRCode.toDataURL(`https://publictransport-api.cyclic.app/api/ticket/scan/${ticketId}`)
+        
         await Promise.all(
             [
                 await OrderService.updateOrder(orderId, { order_status: "00" }),
