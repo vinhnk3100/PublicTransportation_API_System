@@ -5,6 +5,10 @@ const getTicket = async () => {
         return await TicketModel.find({})
             .populate("user")
             .populate("route")
+            .populate({
+                path: "route",
+                populate: {path: "route_agencies"}
+            })
             .populate('ticket_price', "route_price")
             .lean().exec();
     } catch (e) {
