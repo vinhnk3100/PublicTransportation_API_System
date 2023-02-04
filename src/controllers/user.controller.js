@@ -150,7 +150,7 @@ exports.depositAmountWallet = async (req, res, next) => {
 
         return res.json({
             success: true,
-            message: `User ${userId} deposit wallet success!`,
+            message: `Deposit wallet success!`,
             wallet: updateWallet
         })
 
