@@ -34,8 +34,13 @@ Router.delete('/:userId',
 
 // ========================================== Utilities Sections ==========================================
 
+// Get amount wallet
+Router.get('/wallet/get',
+    userController.getAmountWallet
+)
+
 // Add wallet money
-Router.put('/deposit/wallet',
+Router.put('/wallet/deposit',
     userController.depositAmountWallet
 );
 

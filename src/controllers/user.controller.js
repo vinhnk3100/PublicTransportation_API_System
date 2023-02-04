@@ -136,6 +136,26 @@ exports.delete = async (req, res, next) => {
 
 // ========================= Utilities Sections
 
+// Get wallet
+exports.getAmountWallet = async (req, res ,next) => {
+    try {
+        const { access_token } = req.headers;
+        const { id } = verifyToken(access_token)
+        const userId = id;
+
+        const userWallet = await UserService.getUserById(userId)
+
+        return res.json({
+            success: true,
+            user_wallet: userWallet[0].wallet
+        })
+
+    } catch (e) {
+        console.log("UserController: Get Amount Wallet Error: ", e);
+        next(e);
+    }
+}
+
 // Add money to Wallet
 exports.depositAmountWallet = async (req, res, next) => {
     try {
@@ -150,7 +170,7 @@ exports.depositAmountWallet = async (req, res, next) => {
 
         return res.json({
             success: true,
-            message: `User ${userId} deposit wallet success!`,
+            message: `Deposit wallet success!`,
             wallet: updateWallet
         })
 
