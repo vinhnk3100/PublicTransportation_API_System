@@ -16,7 +16,7 @@ const { isWalletInsufficient } = require("../utils/checkWalletTransaction.ultis"
 exports.vnPayOrder = async (
     {
         ipAddr,
-        routeAmount,
+        amount,
         bankCode,
         orderDescription,
         orderType,
@@ -49,7 +49,7 @@ exports.vnPayOrder = async (
     vnp_Params['vnp_TxnRef'] = orderId;
     vnp_Params['vnp_OrderInfo'] = orderDescription;
     vnp_Params['vnp_OrderType'] = orderType;
-    vnp_Params['vnp_Amount'] = routeAmount * 100;
+    vnp_Params['vnp_Amount'] = amount * 100;
     vnp_Params['vnp_ReturnUrl'] = returnUrl;
     vnp_Params['vnp_IpAddr'] = ipAddr;
     vnp_Params['vnp_CreateDate'] = createDate;

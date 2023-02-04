@@ -4,7 +4,6 @@ const filterTicketIdSameRouteId = require('../utils/filterTicketIdSameRouteId.ut
 
 // Get route
 exports.get = async (req, res, next) => {
-
     let searchQuery = {};
 
     if(Object.keys(req.query).length > 0){

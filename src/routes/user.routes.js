@@ -2,7 +2,9 @@ const Router = require("express").Router();
 const roleValidation = require("../validations/role.validation");
 const userController = require("../controllers/user.controller");
 const authValidation = require("../validations/auth.validation");
-const userValidation = require("../validations/user.validation")
+const userValidation = require("../validations/user.validation");
+
+const tokenValidation = require("../middlewares/auth.middleware")
 
 // Get all user
 Router.get('/', userController.get);
@@ -39,9 +41,16 @@ Router.get('/wallet/get',
     userController.getAmountWallet
 )
 
-// Add wallet money
-Router.put('/wallet/deposit',
-    userController.depositAmountWallet
+Router.post('/wallet/deposit/create',
+    tokenValidation.verifyValidAccessToken,
+    userController.createWalletDepositOrder
 );
+
+// Add wallet money
+Router.get('/wallet/deposit/vnpay-return',
+    userController.returnURL
+);
+
+
 
 module.exports = Router;

@@ -87,7 +87,7 @@ exports.create = async (req, res, next) => {
 
                 const vnPayOrderData = {
                     ipAddr,
-                    routeAmount,
+                    amount: routeAmount,
                     bankCode,
                     orderDescription,
                     orderType,
@@ -116,7 +116,7 @@ exports.create = async (req, res, next) => {
                         code: transactionRes?.code,
                     })
                 }
-                
+
                 // Handle after transaction
                 const updateOrder = await handlePaymentSuccess({ orderId: order?._id.toString() });
 
@@ -205,7 +205,7 @@ exports.delete = async (req, res, next) => {
 }
 
 exports.deleteAll = async (req, res, next) => {
-    try { 
+    try {
         await OrderService.deleteAllOrder();
 
         return res.json({
