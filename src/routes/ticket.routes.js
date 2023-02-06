@@ -2,6 +2,7 @@ const Router = require("express").Router()
 const ticketController = require("../controllers/ticket.controllers")
 
 const tokenValidation = require("../middlewares/auth.middleware")
+const requestMiddleware = require("../middlewares/requestLimit.middleware")
 const roleValidation = require("../validations/role.validation")
 const ticketValidation = require("../validations/ticket.validation")
 
@@ -41,6 +42,7 @@ Router.delete('/',
  * 4. Check the counting tap (check in) & type of ticket
  */
 Router.get('/scan/:ticketId',
+    requestMiddleware.requestLimit,
     ticketValidation.checkTicketId,
     ticketValidation.checkTicketExpired,
     ticketValidation.checkTicketTypeAndTapCount,
