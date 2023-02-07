@@ -40,7 +40,9 @@ exports.checkValidTicket = async (req, res, next) => {
                 message: "Ticket is Invalid"
             });
         }
-
+        
+        res.locals.ticketType = ticket.ticket_type
+        
         next()
     } catch (e) {
         throw new Error(e.message)

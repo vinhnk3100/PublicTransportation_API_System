@@ -1,7 +1,7 @@
 // Buy ticket - delete - update
 const { TicketService, RouteService } = require('../services/index')
 const { verifyToken } = require('../utils/jsonTokenGenerator.utils');
-
+const TICKET_TYPE = require('../helpers/ticketTypes');
 
 // get
 exports.get = async (req, res, next) => {
@@ -122,12 +122,22 @@ exports.deleteAll = async (req, res, next) => {
  * 4. Check the tapping count (check in) & tapping count + 1
 */
 exports.scanById = async (req, res, next) => {
+    try {
+        const ticketId = res.locals.ticketId
+        const ticketType = res.locals.ticketType
 
-    const ticketId = res.locals.ticketId
-    await TicketService.updateTicket(ticketId, { $inc: { tap_count: 1 }})
+        await TicketService.updateTicket(ticketId, { $inc: { tap_count: 1 }})
 
-    return res.render('pages/scanTicketSuccess.ejs', {
-        success: true,
-        message: "Ticket tapping Success"
-    });
+        if (ticketType === TICKET_TYPE.ONETIME_USE) {
+            await TicketService.updateTicket(ticketId, { is_valid: false })
+        }
+
+        return res.render('pages/scanTicketSuccess.ejs', {
+            success: true,
+            message: "Ticket tapping Success"
+        });
+    } catch (e) {
+        console.log("TicketController: Scan Ticket Error: ", e);
+        next(e);
+    }
 }
