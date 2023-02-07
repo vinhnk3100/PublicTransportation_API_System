@@ -122,6 +122,7 @@ exports.deleteAll = async (req, res, next) => {
  * 4. Check the tapping count (check in) & tapping count + 1
 */
 exports.scanById = async (req, res, next) => {
+    req.connection.setTimeout( 1000 * 5 ); // 5 secs
     try {
         const ticketId = res.locals.ticketId
         const ticketType = res.locals.ticketType
