@@ -3,7 +3,6 @@ const { TicketService } = require('../services');
 const TICKET_TYPE = require('../helpers/ticketTypes');
 
 exports.checkTicketId = async (req, res, next) => {
-    console.log("CALL GET REQUEST")
     const { ticketId } = req.params
 
     try {
