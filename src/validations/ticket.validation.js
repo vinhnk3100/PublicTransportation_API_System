@@ -2,9 +2,12 @@ const mongoose = require('mongoose');
 const { TicketService } = require('../services');
 const TICKET_TYPE = require('../helpers/ticketTypes');
 
-exports.checkBotScanner = async (req, res, next) => {
+// This to check if user is using browser only
+exports.checkUserAgent = async (req, res, next) => {
     try {
         const userAgent = req.headers['user-agent']
+
+        // If user using _zaloBot scanner
         if (userAgent?.includes("_zbot")) {
             console.log("User is Bot")
             return res.render('pages/scanTicketFalse', {
@@ -12,6 +15,16 @@ exports.checkBotScanner = async (req, res, next) => {
                 message: "Failed to scan ticket"
             });
         }
+        
+        // Detect if User not using Browser
+        if(!userAgent.match(/chrome|chromium|crios/i|/firefox|fxios/i|/safari/i|/opr\//i|/edg/i)){
+            console.log("Detected User not using Browser")
+            return res.render('pages/scanTicketFalse', {
+                success: false,
+                message: "Failed to scan ticket"
+            });
+          }
+
         console.log("Pass to another validation")
         next()
     } catch (e) {
