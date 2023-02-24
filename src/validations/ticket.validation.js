@@ -56,10 +56,10 @@ exports.checkTicketExpired = async (req, res, next) => {
         const date = Date.now()
         const expiredDate = Math.floor((ticket.ticket_expired - date)/ 1000)
         if (expiredDate <= 0) {
-            return res.json({
+            return res.render('pages/scanTicketFalse', {
                 success: false,
-                message: "Ticket expired"
-            })
+                message: "Ticket is Expired"
+            });
         }
         
         next()
