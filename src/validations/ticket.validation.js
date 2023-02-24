@@ -4,7 +4,7 @@ const TICKET_TYPE = require('../helpers/ticketTypes');
 
 exports.checkBotScanner = async (req, res, next) => {
     try {
-        console.log(req.headers['user-agent'])
+        console.log("Request Header: ",req.headers)
     } catch (e) {
         throw new Error(e.message)
     }
