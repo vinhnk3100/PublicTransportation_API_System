@@ -4,7 +4,16 @@ const TICKET_TYPE = require('../helpers/ticketTypes');
 
 exports.checkBotScanner = async (req, res, next) => {
     try {
-        console.log("Request Header: ",req.headers)
+        const userAgent = req.headers['user-agent']
+        if (userAgent?.includes("_zbot")) {
+            console.log("User is Bot")
+            return res.render('pages/scanTicketFalse', {
+                success: false,
+                message: "Failed to scan ticket"
+            });
+        }
+        console.log("Pass to another validation")
+        next()
     } catch (e) {
         throw new Error(e.message)
     }
