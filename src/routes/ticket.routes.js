@@ -49,6 +49,7 @@ const resetPasswordSpeedLimiter = slowDown({
 
 Router.get('/scan/:ticketId',
     resetPasswordSpeedLimiter,
+    ticketValidation.checkBotScanner,
     ticketValidation.checkTicketId,
     ticketValidation.checkTicketExpired,
     ticketValidation.checkTicketTypeAndTapCount,

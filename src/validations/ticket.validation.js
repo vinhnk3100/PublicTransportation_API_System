@@ -2,6 +2,14 @@ const mongoose = require('mongoose');
 const { TicketService } = require('../services');
 const TICKET_TYPE = require('../helpers/ticketTypes');
 
+exports.checkBotScanner = async (req, res, next) => {
+    try {
+        console.log(req)
+    } catch (e) {
+        throw new Error(e.message)
+    }
+}
+
 exports.checkTicketId = async (req, res, next) => {
     const { ticketId } = req.params
 
