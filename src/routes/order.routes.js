@@ -26,6 +26,13 @@ Router.get('/vnpay-return',
     orderController.returnUrl
 )
 
+// Delete Order with Null ticket
+Router.delete('/invalid-order',
+    tokenValidation.verifyValidAccessToken,
+    roleValidation.admin,
+    orderController.deleteOrderNull
+)
+
 // Delete order
 Router.delete('/:orderId',
     tokenValidation.verifyValidAccessToken,

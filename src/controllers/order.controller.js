@@ -204,13 +204,35 @@ exports.delete = async (req, res, next) => {
     }
 }
 
+exports.deleteOrderNull = async (req, res, next) => {
+    try {
+        const order = await OrderService.getOrder();
+
+        const listOfNullOrder = order?.map((o) => {
+            if (o.ticket === null) {
+                return o._id
+            }
+        })
+
+        await OrderService.deleteOrderNullTicket(listOfNullOrder);
+
+        return res.json({
+            success: true,
+            message: "Remove all null ticket orders"
+        })
+    } catch (e) {
+        console.log("OrderController: Delete Null Order Error: ", e);
+        next(e);
+    }
+}
+
 exports.deleteAll = async (req, res, next) => {
     try {
         await OrderService.deleteAllOrder();
 
         return res.json({
             success: true,
-            message: "Remove all order",
+            message: "Remove all order"
         })
     } catch (e) {
         console.log("OrderController: Delete All Order Error: ", e);

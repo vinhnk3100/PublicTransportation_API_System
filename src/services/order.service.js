@@ -48,9 +48,17 @@ const deleteOrder = async (orderId) => {
     }
 }
 
+const deleteOrderNullTicket = async (listOrderId) => {
+    try {
+        return await OrderModel.deleteMany({ _id: listOrderId }).lean().exec();
+    } catch (e) {
+        throw new Error(e.message)
+    }
+}
+
 const deleteAllOrder = async () => {
     try {
-        return await OrderModel.deleteMany();
+        return await OrderModel.deleteMany().lean().exec();
     } catch (e) {
         throw new Error(e.message)
     }
@@ -62,5 +70,6 @@ module.exports = {
     createOrder,
     updateOrder,
     deleteOrder,
+    deleteOrderNullTicket,
     deleteAllOrder
 }
