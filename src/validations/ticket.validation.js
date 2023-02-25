@@ -14,6 +14,12 @@ exports.checkUserAgent = async (req, res, next) => {
                 success: false,
                 message: "Failed to scan ticket"
             });
+        } else if (userAgent?.includes("bot")) {
+            console.log("User is Bot")
+            return res.render('pages/scanTicketFalse', {
+                success: false,
+                message: "Failed to scan ticket"
+            });
         }
         
         // Detect if User not using Browser
@@ -23,7 +29,7 @@ exports.checkUserAgent = async (req, res, next) => {
                 success: false,
                 message: "Failed to scan ticket"
             });
-          }
+        }
 
         console.log("Pass to another validation")
         next()
